@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EOE 看图猜词</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 主容器 -->
+    <div id="app">
+        <!-- 主页面 -->
+        <div id="main-page" class="page active">
+            <div class="background"></div>
+            <div class="content">
+                <h1 class="outlined-text">看图猜词</h1>
+                <div class="decoration">- * - * -</div>
+                <div class="button-group">
+                    <button class="rounded-button" onclick="showSelectBankPage()">开始游戏</button>
+                    <button class="rounded-button" onclick="showSettingsPage()">设置</button>
+                </div>
+            </div>
+            <button class="rounded-button small manage-btn" onclick="showManagePage()">管理题库</button>
+            <div class="bottom-text">Made with Love</div>
+        </div>
+
+        <!-- 设置页面 -->
+        <div id="settings-page" class="page">
+            <div class="background"></div>
+            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+            <div class="content">
+                <h1 class="outlined-text">设置</h1>
+                <div class="settings-container">
+                    <div class="setting-item">
+                        <label class="outlined-text">背景音乐音量</label>
+                        <input type="range" id="bgm-volume" min="0" max="1" step="0.1" value="0.5">
+                    </div>
+                    <div class="setting-item">
+                        <label class="outlined-text">音效音量</label>
+                        <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.5">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 管理题库页面 -->
+        <div id="manage-page" class="page">
+            <div class="background"></div>
+            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+            <h1 class="outlined-text title">管理题库</h1>
+            <div class="button-row">
+                <button class="rounded-button" onclick="showAddBankPage()">新增题库</button>
+                <button class="rounded-button" onclick="importBank()">导入题库</button>
+            </div>
+            <div class="bank-list-container">
+                <div id="bank-list" class="bank-list"></div>
+            </div>
+        </div>
+
+        <!-- 选择题库页面 -->
+        <div id="select-bank-page" class="page">
+            <div class="background"></div>
+            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+            <h1 class="outlined-text title">选择题库</h1>
+            <div class="bank-list-container">
+                <div id="select-bank-list" class="bank-list"></div>
+            </div>
+        </div>
+
+        <!-- 编辑题库页面 -->
+        <div id="edit-bank-page" class="page">
+            <div class="background"></div>
+            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+            <div class="edit-header">
+                <div class="edit-info">
+                    <input type="text" id="edit-bank-name" placeholder="题库名称" value="新题库">
+                    <input type="text" id="edit-author" placeholder="作者">
+                    <div id="question-info" class="outlined-text">第 1 / 1 题 (有效: 0)</div>
+                </div>
+            </div>
+            <div class="edit-container">
+                <div class="edit-left">
+                    <h3 class="outlined-text">题目图片 (点击上传)</h3>
+                    <div id="img-button" class="image-button" onclick="editorUploadImage()">
+                        <span>点击此处上传图片</span>
+                        <img id="preview-image" src="" alt="预览图" style="display: none;">
+                    </div>
+                </div>
+                <div class="edit-right">
+                    <div class="form-item">
+                        <label class="outlined-text">问题:</label>
+                        <input type="text" id="edit-question" placeholder="请输入问题">
+                    </div>
+                    <div class="form-item">
+                        <label class="outlined-text">答案:</label>
+                        <input type="text" id="edit-answer" placeholder="请输入答案">
+                    </div>
+                    <div class="form-item">
+                        <label class="outlined-text">提示:</label>
+                        <input type="text" id="edit-hint" placeholder="请输入提示">
+                    </div>
+                </div>
+            </div>
+            <div class="edit-buttons">
+                <button class="rounded-button" onclick="editorPrev()">上一题</button>
+                <button class="rounded-button" onclick="editorNext()">下一题</button>
+                <button class="rounded-button" onclick="editorAdd()">增加一题</button>
+                <button class="rounded-button" onclick="editorClear()">清除本题</button>
+                <button class="rounded-button success" onclick="editorSave()">保存题库</button>
+            </div>
+        </div>
+
+        <!-- 游戏页面 -->
+        <div id="game-page" class="page">
+            <div class="background"></div>
+            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+            <div class="game-info">
+                <span id="game-author" class="outlined-text"></span>
+                <span id="game-progress" class="outlined-text"></span>
+            </div>
+            <div class="game-container">
+                <div class="game-left">
+                    <div id="game-image-container">
+                        <img id="game-image" src="" alt="游戏图片">
+                    </div>
+                </div>
+                <div class="game-right">
+                    <h3 id="game-question" class="outlined-text"></h3>
+                    <input type="text" id="game-answer-input" placeholder="请输入答案">
+                    <div class="divider"></div>
+                    <div id="result-text" class="outlined-text"></div>
+                    <div class="button-group">
+                        <button class="rounded-button" onclick="checkAnswer()">回答</button>
+                        <button class="rounded-button" onclick="showHint()">提示</button>
+                        <button class="rounded-button" onclick="giveUp()">放弃</button>
+                    </div>
+                    <div id="next-btn-container" style="display: none;">
+                        <button class="rounded-button success" onclick="nextQuestion()">下一题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏完成页面 -->
+        <div id="complete-page" class="page">
+            <div class="background"></div>
+            <div class="content">
+                <h1 class="outlined-text success">恭喜通关！</h1>
+                <div class="decoration">- * - * - * -</div>
+                <div class="stats-container">
+                    <h3 class="outlined-text">游戏统计</h3>
+                    <div id="stats-correct" class="outlined-text success"></div>
+                    <div id="stats-wrong" class="outlined-text error"></div>
+                    <div id="stats-accuracy" class="outlined-text"></div>
+                </div>
+                <button class="rounded-button" onclick="showMainPage()">返回主界面</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐藏的文件输入 -->
+    <input type="file" id="file-input" style="display: none;">
+    <input type="file" id="bank-import-input" style="display: none;">
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
