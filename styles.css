@@ -685,6 +685,23 @@ h1.outlined-text {
         text-align: center;
     }
     
+    /* 游戏页面按钮组优化 - 手机端 */
+    .game-right .button-group {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 0 10px;
+    }
+    
+    .game-right .button-group .rounded-button {
+        flex: 1;
+        max-width: none;
+        padding: 10px 8px;
+        font-size: 14px;
+        margin: 0 5px;
+        min-width: auto;
+    }
+    
     /* 编辑页面优化 */
     .edit-left, .edit-right {
         padding: 15px;
