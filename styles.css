@@ -72,6 +72,17 @@ button {
     background-repeat: no-repeat;
     opacity: 0.5;
     z-index: -1;
+    /* 优化移动端背景显示 */
+    background-attachment: fixed;
+}
+
+/* 响应式背景优化 */
+@media (max-width: 768px) {
+    .background::before {
+        background-size: cover;
+        background-position: center;
+        opacity: 0.3;
+    }
 }
 
 /* 内容容器 */
@@ -516,12 +527,26 @@ h1.outlined-text {
 @media (max-width: 768px) {
     h1.outlined-text {
         font-size: 32px;
+        margin-bottom: 15px;
+    }
+    
+    .decoration {
+        font-size: 20px;
     }
     
     .rounded-button {
         padding: 12px 24px;
         font-size: 18px;
         margin: 10px;
+        min-width: 120px;
+        min-height: 44px;
+    }
+    
+    .rounded-button.small {
+        padding: 10px 18px;
+        font-size: 14px;
+        min-width: 80px;
+        min-height: 40px;
     }
     
     .edit-container {
@@ -529,6 +554,8 @@ h1.outlined-text {
         height: auto;
         top: 200px;
         bottom: 150px;
+        gap: 15px;
+        width: 95%;
     }
     
     .game-container {
@@ -536,47 +563,233 @@ h1.outlined-text {
         height: auto;
         top: 100px;
         bottom: 100px;
+        gap: 15px;
+        width: 95%;
     }
     
     .edit-buttons {
         flex-wrap: wrap;
         bottom: 20px;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .edit-buttons .rounded-button {
+        padding: 10px 15px;
+        font-size: 14px;
     }
     
     .button-row {
         flex-wrap: wrap;
         justify-content: center;
+        gap: 15px;
+    }
+    
+    .button-row .rounded-button {
+        padding: 12px 20px;
+        font-size: 16px;
     }
     
     .edit-info {
         flex-wrap: wrap;
         justify-content: center;
+        gap: 15px;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .edit-info input {
+        width: 90%;
+        max-width: 300px;
+        padding: 10px;
+        font-size: 14px;
     }
     
     #question-info {
         margin-left: 0;
         margin-top: 10px;
+        font-size: 16px;
+    }
+    
+    /* 游戏页面优化 */
+    .game-info {
+        top: 70px;
+        right: 10px;
+        left: 10px;
+        justify-content: space-between;
+    }
+    
+    .game-info span {
+        font-size: 14px;
+    }
+    
+    #game-answer-input {
+        width: 90%;
+        max-width: 300px;
+        font-size: 18px;
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    #game-question {
+        font-size: 18px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    /* 编辑页面优化 */
+    .edit-left, .edit-right {
+        padding: 15px;
+    }
+    
+    .form-item input {
+        padding: 12px;
+        font-size: 16px;
+    }
+    
+    .image-button span {
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    /* 题库项优化 */
+    .bank-item {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        padding: 15px;
+    }
+    
+    .bank-item-info {
+        font-size: 14px;
+        text-align: center;
+    }
+    
+    .bank-item-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .bank-item-buttons .rounded-button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    
+    /* 统计容器优化 */
+    .stats-container {
+        padding: 20px;
+        margin: 15px;
+    }
+    
+    .stats-container h3 {
+        font-size: 20px;
+    }
+    
+    .stats-container div {
+        font-size: 16px;
+    }
+    
+    /* 底部文字 */
+    .bottom-text {
+        font-size: 12px;
+        bottom: 15px;
     }
 }
 
 @media (max-width: 480px) {
     h1.outlined-text {
-        font-size: 24px;
+        font-size: 26px;
+    }
+    
+    h3.outlined-text {
+        font-size: 16px;
     }
     
     .rounded-button {
-        padding: 10px 20px;
-        font-size: 16px;
-        margin: 8px;
+        padding: 14px 24px;
+        font-size: 18px;
+        margin: 12px;
+        min-width: 140px;
+    }
+    
+    .rounded-button.small {
+        padding: 12px 20px;
+        font-size: 14px;
     }
     
     .settings-container {
         padding: 20px;
         margin: 10px;
+        width: 95%;
     }
     
     .stats-container {
-        padding: 15px 25px;
+        padding: 20px;
         margin: 10px;
+        width: 95%;
+    }
+    
+    .bank-list-container {
+        width: 95%;
+        top: 200px;
+        height: 65%;
+    }
+    
+    .manage-btn {
+        top: 15px;
+        right: 15px;
+    }
+    
+    .home-btn {
+        top: 15px;
+        left: 15px;
+    }
+    
+    .content {
+        padding: 0 15px;
+    }
+    
+    /* 调整输入框大小 */
+    input[type="text"] {
+        font-size: 16px;
+        padding: 12px;
+    }
+    
+    input[type="range"] {
+        height: 6px;
+    }
+    
+    /* 游戏图片容器 */
+    #game-image-container {
+        width: 100%;
+        height: 300px;
+    }
+    
+    #game-image {
+        max-width: 95%;
+        max-height: 95%;
+    }
+    
+    /* 编辑图片按钮 */
+    .image-button {
+        height: 250px;
+    }
+    
+    /* 装饰文字 */
+    .decoration {
+        font-size: 18px;
+    }
+    
+    /* 结果文本 */
+    #result-text {
+        font-size: 16px;
+        margin: 20px 0;
+    }
+    
+    /* 分隔线 */
+    .divider {
+        width: 90%;
+        max-width: 250px;
     }
 }
