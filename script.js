@@ -57,6 +57,7 @@ class SoundManager {
         this.sfxVolume = 0.5;
         this.sounds = {};
         this.bgm = null;
+        this.bgmPlaying = false;
         this.loadSounds();
         this.setupEventListeners();
     }
@@ -81,7 +82,6 @@ class SoundManager {
         this.bgm = new Audio('bgm.mp3');
         this.bgm.volume = this.bgmVolume;
         this.bgm.loop = true;
-        this.playBgm();
     }
 
     playBgm() {
@@ -89,7 +89,24 @@ class SoundManager {
             this.bgm.play().catch(e => {
                 console.log('背景音乐播放失败:', e);
             });
+            this.bgmPlaying = true;
         }
+    }
+
+    pauseBgm() {
+        if (this.bgm) {
+            this.bgm.pause();
+            this.bgmPlaying = false;
+        }
+    }
+
+    toggleBgm() {
+        if (this.bgmPlaying) {
+            this.pauseBgm();
+        } else {
+            this.playBgm();
+        }
+        return this.bgmPlaying;
     }
 
     setBgmVolume(volume) {
@@ -212,6 +229,13 @@ class QuestionBank {
             }
             
             const banks = this.getBanks();
+            
+            // 检查是否已存在同名题库
+            const existingBank = banks.find(b => b.name === bankData.name);
+            if (existingBank) {
+                return { success: false, message: '题库已存在' };
+            }
+            
             const bank = {
                 id: Date.now(),
                 name: bankData.name,
@@ -581,13 +605,71 @@ function showGameComplete() {
     document.getElementById('stats-accuracy').textContent = `正确率: ${accuracy}%`;
 }
 
-// 初始化
+// 全局函数 - 切换背景音乐
+function toggleBgm() {
+    const isPlaying = soundManager.toggleBgm();
+    const btn = document.getElementById('bgm-toggle');
+    btn.textContent = isPlaying ? '关闭音乐' : '开启音乐';
+}
+
+// 新增：加载初始题库（从banks文件夹导入）
+async function loadInitialBanks() {
+    // 定义初始题库文件路径
+    const initialBankFiles = [
+        'banks/第一期_updated.json',
+        'banks/第二期_updated.json'
+    ];
+
+    // 获取本地已有的题库
+    const existingBanks = QuestionBank.getBanks();
+    // 提取已有题库的名称（用于去重）
+    const existingBankNames = existingBanks.map(bank => bank.name);
+
+    // 遍历并导入每个初始题库
+    for (const filePath of initialBankFiles) {
+        try {
+            // 请求JSON文件
+            const response = await fetch(filePath);
+            if (!response.ok) {
+                throw new Error(`加载 ${filePath} 失败: ${response.status}`);
+            }
+            const bankData = await response.json();
+
+            // 校验题库格式（与QuestionBank.importBank逻辑一致）
+            if (!bankData.name || !bankData.questions) {
+                console.warn(`跳过无效格式的题库: ${filePath}`);
+                continue;
+            }
+
+            // 去重：如果本地已有同名题库，跳过导入
+            if (existingBankNames.includes(bankData.name)) {
+                console.log(`题库 "${bankData.name}" 已存在，跳过导入`);
+                continue;
+            }
+
+            // 导入题库（复用QuestionBank的导入逻辑）
+            const importResult = QuestionBank.importBank(JSON.stringify(bankData));
+            if (importResult.success) {
+                console.log(`初始题库 "${bankData.name}" 导入成功`);
+            } else {
+                console.error(`导入 ${filePath} 失败: ${importResult.message}`);
+            }
+        } catch (error) {
+            console.error(`处理 ${filePath} 时出错:`, error);
+        }
+    }
+}
+
+// 修改初始化逻辑：在DOM加载完成后调用loadInitialBanks
 window.addEventListener('DOMContentLoaded', () => {
     // 初始化音效管理器
     soundManager = new SoundManager();
     
-    // 初始化页面
-    showMainPage();
+    // 加载初始题库（关键新增）
+    loadInitialBanks().then(() => {
+        // 初始题库加载完成后，初始化页面
+        showMainPage();
+    });
 });
 
 // 响应式缩放
