@@ -225,6 +225,37 @@ h1.outlined-text {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+/* BGM开关按钮 */
+.bgm-toggle-btn {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #FFB366;
+    color: #333333;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 3px solid #FFFFFF;
+}
+
+.bgm-toggle-btn:hover {
+    background-color: #FF9933;
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bgm-toggle-btn:active {
+    transform: translateX(-50%) translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* 设置页面样式 */
 .settings-container {
     background-color: #FFFFFF;

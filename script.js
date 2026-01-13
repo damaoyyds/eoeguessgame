@@ -50,6 +50,13 @@ function showAddBankPage() {
     loadEditorQuestion();
 }
 
+// 全局BGM开关函数
+function toggleBgm() {
+    if (soundManager) {
+        soundManager.toggleBgm();
+    }
+}
+
 // 音效管理器
 class SoundManager {
     constructor() {
@@ -60,6 +67,14 @@ class SoundManager {
         this.bgmPlaying = false;
         this.loadSounds();
         this.setupEventListeners();
+        this.updateBgmButton();
+    }
+    
+    updateBgmButton() {
+        const btn = document.getElementById('bgm-toggle-btn');
+        if (btn) {
+            btn.innerHTML = this.bgmPlaying ? '🔊' : '🔇';
+        }
     }
 
     loadSounds() {
@@ -106,6 +121,7 @@ class SoundManager {
         } else {
             this.playBgm();
         }
+        this.updateBgmButton();
         return this.bgmPlaying;
     }
 
