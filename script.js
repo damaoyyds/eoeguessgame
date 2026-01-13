@@ -364,7 +364,14 @@ function loadEditorQuestion() {
         const previewImg = document.getElementById('preview-image');
         
         if (imgData) {
-            previewImg.src = QuestionBank.base64ToImage(imgData);
+            // 检查是否是文件路径（包含\或/）
+            if (imgData.includes('\\') || imgData.includes('/')) {
+                // 是文件路径，构建完整URL
+                previewImg.src = `banks/${imgData.replace(/\\/g, '/')}`;
+            } else {
+                // 是base64编码，转换为data URL
+                previewImg.src = QuestionBank.base64ToImage(imgData);
+            }
             previewImg.style.display = 'block';
             imgButton.querySelector('span').style.display = 'none';
         } else {
@@ -535,7 +542,14 @@ function showGamePage() {
     
     const gameImage = document.getElementById('game-image');
     if (currentQ.image) {
-        gameImage.src = QuestionBank.base64ToImage(currentQ.image);
+        // 检查是否是文件路径（包含\或/）
+        if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
+            // 是文件路径，构建完整URL
+            gameImage.src = `banks/${currentQ.image.replace(/\\/g, '/')}`;
+        } else {
+            // 是base64编码，转换为data URL
+            gameImage.src = QuestionBank.base64ToImage(currentQ.image);
+        }
         gameImage.style.display = 'block';
     } else {
         gameImage.src = '';
