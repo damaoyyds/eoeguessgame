@@ -257,11 +257,8 @@ class QuestionBank {
             
             const banks = this.getBanks();
             
-            // 检查是否已存在同名题库
-            const existingBank = banks.find(b => b.name === bankData.name);
-            if (existingBank) {
-                return { success: false, message: '题库已存在' };
-            }
+            // 检查是否已存在同名题库，如果存在则替换
+            const existingIndex = banks.findIndex(b => b.name === bankData.name);
             
             const bank = {
                 id: Date.now(),
@@ -270,7 +267,15 @@ class QuestionBank {
                 questions: bankData.questions,
                 count: bankData.questions.length
             };
-            banks.push(bank);
+            
+            if (existingIndex !== -1) {
+                // 替换旧题库
+                banks[existingIndex] = bank;
+            } else {
+                // 添加新题库
+                banks.push(bank);
+            }
+            
             this.saveBanks(banks);
             return { success: true, message: '导入成功' };
         } catch (e) {
@@ -391,9 +396,12 @@ function loadEditorQuestion() {
         const previewImg = document.getElementById('preview-image');
         
         if (imgData) {
-            // 检查是否是文件路径（包含\或/）
-            if (imgData.includes('\\') || imgData.includes('/')) {
-                // 是文件路径，构建完整URL
+            // 检查是否是URL（以http://或https://开头）
+            if (imgData.startsWith('http://') || imgData.startsWith('https://')) {
+                // 是完整URL，直接使用
+                previewImg.src = imgData;
+            } else if (imgData.includes('\\') || imgData.includes('/')) {
+                // 是本地文件路径，构建完整URL
                 previewImg.src = `banks/${imgData.replace(/\\/g, '/')}`;
             } else {
                 // 是base64编码，转换为data URL
@@ -568,20 +576,23 @@ function showGamePage() {
     document.getElementById('next-btn-container').style.display = 'none';
     
     const gameImage = document.getElementById('game-image');
-    if (currentQ.image) {
-        // 检查是否是文件路径（包含\或/）
-        if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
-            // 是文件路径，构建完整URL
-            gameImage.src = `banks/${currentQ.image.replace(/\\/g, '/')}`;
+        if (currentQ.image) {
+            // 检查是否是URL（以http://或https://开头）
+            if (currentQ.image.startsWith('http://') || currentQ.image.startsWith('https://')) {
+                // 是完整URL，直接使用
+                gameImage.src = currentQ.image;
+            } else if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
+                // 是本地文件路径，构建完整URL
+                gameImage.src = `banks/${currentQ.image.replace(/\\/g, '/')}`;
+            } else {
+                // 是base64编码，转换为data URL
+                gameImage.src = QuestionBank.base64ToImage(currentQ.image);
+            }
+            gameImage.style.display = 'block';
         } else {
-            // 是base64编码，转换为data URL
-            gameImage.src = QuestionBank.base64ToImage(currentQ.image);
+            gameImage.src = '';
+            gameImage.style.display = 'none';
         }
-        gameImage.style.display = 'block';
-    } else {
-        gameImage.src = '';
-        gameImage.style.display = 'none';
-    }
     
     answeredCurrent = false;
 }
@@ -661,11 +672,6 @@ async function loadInitialBanks() {
         'banks/第二期_updated.json'
     ];
 
-    // 获取本地已有的题库
-    const existingBanks = QuestionBank.getBanks();
-    // 提取已有题库的名称（用于去重）
-    const existingBankNames = existingBanks.map(bank => bank.name);
-
     // 遍历并导入每个初始题库
     for (const filePath of initialBankFiles) {
         try {
@@ -676,19 +682,7 @@ async function loadInitialBanks() {
             }
             const bankData = await response.json();
 
-            // 校验题库格式（与QuestionBank.importBank逻辑一致）
-            if (!bankData.name || !bankData.questions) {
-                console.warn(`跳过无效格式的题库: ${filePath}`);
-                continue;
-            }
-
-            // 去重：如果本地已有同名题库，跳过导入
-            if (existingBankNames.includes(bankData.name)) {
-                console.log(`题库 "${bankData.name}" 已存在，跳过导入`);
-                continue;
-            }
-
-            // 导入题库（复用QuestionBank的导入逻辑）
+            // 导入题库（importBank会自动处理同名替换）
             const importResult = QuestionBank.importBank(JSON.stringify(bankData));
             if (importResult.success) {
                 console.log(`初始题库 "${bankData.name}" 导入成功`);
