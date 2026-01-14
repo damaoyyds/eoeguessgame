@@ -379,8 +379,8 @@ function loadEditorQuestion() {
                 // 是完整URL，直接使用
                 imageSrc = imgData;
             } else if (imgData.includes('\\') || imgData.includes('/')) {
-                // 是本地文件路径，构建完整URL
-                imageSrc = `banks/${imgData.replace(/\\/g, '/')}`;
+                // 是相对路径，直接使用
+                imageSrc = imgData.replace(/\\/g, '/');
             }
             
             // 清除之前的事件监听器
@@ -652,8 +652,8 @@ async function preloadImages(questions) {
                     // 是完整URL，直接使用
                     imageSrc = question.image;
                 } else if (question.image.includes('\\') || question.image.includes('/')) {
-                    // 是本地文件路径，构建完整URL
-                    imageSrc = `banks/${question.image.replace(/\\/g, '/')}`;
+                    // 是相对路径，直接使用
+                    imageSrc = question.image.replace(/\\/g, '/');
                 }
                 if (imageSrc) {
                     imagesToLoad.push(imageSrc);
@@ -920,8 +920,8 @@ function showGamePage() {
             // 是完整URL，直接使用
             imageSrc = currentQ.image;
         } else if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
-            // 是本地文件路径，构建完整URL
-            imageSrc = `banks/${currentQ.image.replace(/\\/g, '/')}`;
+            // 是相对路径，直接使用
+            imageSrc = currentQ.image.replace(/\\/g, '/');
         }
         
         // 先将图片隐藏
