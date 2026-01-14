@@ -164,6 +164,17 @@
     <input type="file" id="file-input" style="display: none;">
     <input type="file" id="bank-import-input" style="display: none;">
 
+    <!-- 加载进度条 -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="loading-container">
+            <h2 class="outlined-text">正在加载游戏资源...</h2>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+                <div id="progress-text" class="outlined-text">0%</div>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script src="script.js"></script>
 </body>

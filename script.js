@@ -559,8 +559,93 @@ function deleteBank(bank) {
     }
 }
 
+// 图片预加载核心函数
+async function preloadImages(questions) {
+    return new Promise((resolve) => {
+        // 显示加载进度条
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        loadingOverlay.style.display = 'flex';
+        
+        // 获取所有需要加载的图片URL
+        const imagesToLoad = [];
+        questions.forEach(question => {
+            if (question.image) {
+                let imageSrc = '';
+                if (question.image.startsWith('http://') || question.image.startsWith('https://')) {
+                    // 是完整URL，直接使用
+                    imageSrc = question.image;
+                } else if (question.image.includes('\\') || question.image.includes('/')) {
+                    // 是本地文件路径，构建完整URL
+                    imageSrc = `banks/${question.image.replace(/\\/g, '/')}`;
+                } else {
+                    // 是base64编码，转换为data URL
+                    imageSrc = QuestionBank.base64ToImage(question.image);
+                }
+                imagesToLoad.push(imageSrc);
+            }
+        });
+        
+        const totalImages = imagesToLoad.length;
+        if (totalImages === 0) {
+            // 没有图片需要加载，直接完成
+            loadingOverlay.style.display = 'none';
+            resolve();
+            return;
+        }
+        
+        let loadedImages = 0;
+        
+        // 更新进度的函数
+        const updateProgress = () => {
+            const progress = Math.floor((loadedImages / totalImages) * 100);
+            progressBar.style.width = `${progress}%`;
+            progressText.textContent = `${progress}%`;
+        };
+        
+        // 加载单个图片的函数
+        const loadImage = (imageSrc) => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                
+                img.onload = () => {
+                    loadedImages++;
+                    updateProgress();
+                    resolve();
+                };
+                
+                img.onerror = () => {
+                    console.warn('图片加载失败:', imageSrc);
+                    // 加载失败不中断，继续加载其他图片
+                    loadedImages++;
+                    updateProgress();
+                    resolve();
+                };
+                
+                img.src = imageSrc;
+            });
+        };
+        
+        // 批量加载图片
+        const loadAllImages = async () => {
+            for (const imageSrc of imagesToLoad) {
+                await loadImage(imageSrc);
+            }
+            
+            // 加载完成后延迟0.5秒隐藏加载框，让用户感知到加载完成
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                resolve();
+            }, 500);
+        };
+        
+        loadAllImages();
+    });
+}
+
 // 开始游戏
-function startGame(bank) {
+async function startGame(bank) {
     gameBank = bank;
     gameQuestions = JSON.parse(JSON.stringify(bank.questions));
     gameAuthor = bank.author || '未知';
@@ -569,6 +654,11 @@ function startGame(bank) {
     attemptCount = 0;
     gaveUpCount = 0;
     answeredCurrent = false;
+    
+    // 预加载图片
+    await preloadImages(gameQuestions);
+    
+    // 预加载完成后显示游戏页面
     showGamePage();
 }
 
