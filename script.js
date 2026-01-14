@@ -225,22 +225,6 @@ class QuestionBank {
         return banks.find(b => b.id === bankId);
     }
 
-    static imageToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const base64String = e.target.result.split(',')[1];
-                resolve(base64String);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    static base64ToImage(base64Str) {
-        return `data:image/jpeg;base64,${base64Str}`;
-    }
-
     static importBank(jsonData) {
         try {
             const bankData = JSON.parse(jsonData);
@@ -397,9 +381,6 @@ function loadEditorQuestion() {
             } else if (imgData.includes('\\') || imgData.includes('/')) {
                 // 是本地文件路径，构建完整URL
                 imageSrc = `banks/${imgData.replace(/\\/g, '/')}`;
-            } else {
-                // 是base64编码，转换为data URL
-                imageSrc = QuestionBank.base64ToImage(imgData);
             }
             
             // 清除之前的事件监听器
@@ -456,9 +437,8 @@ document.getElementById('file-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (file) {
         try {
-            const base64Data = await QuestionBank.imageToBase64(file);
-            editQuestions[editIndex].image = base64Data;
-            loadEditorQuestion();
+            // 移除base64编码，直接使用文件路径或URL
+            alert('请直接输入图片URL或本地文件路径，不再支持base64编码');
         } catch (error) {
             alert('图片上传失败');
         }
@@ -579,11 +559,10 @@ async function preloadImages(questions) {
                 } else if (question.image.includes('\\') || question.image.includes('/')) {
                     // 是本地文件路径，构建完整URL
                     imageSrc = `banks/${question.image.replace(/\\/g, '/')}`;
-                } else {
-                    // 是base64编码，转换为data URL
-                    imageSrc = QuestionBank.base64ToImage(question.image);
                 }
-                imagesToLoad.push(imageSrc);
+                if (imageSrc) {
+                    imagesToLoad.push(imageSrc);
+                }
             }
         });
         
@@ -688,9 +667,6 @@ function showGamePage() {
         } else if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
             // 是本地文件路径，构建完整URL
             imageSrc = `banks/${currentQ.image.replace(/\\/g, '/')}`;
-        } else {
-            // 是base64编码，转换为data URL
-            imageSrc = QuestionBank.base64ToImage(currentQ.image);
         }
         
         // 先将图片隐藏
