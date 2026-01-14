@@ -427,6 +427,66 @@ function saveEditorQuestion() {
     }
 }
 
+// 图片压缩和格式转换函数
+async function compressImage(file, options = {}) {
+    const {
+        maxWidth = 800,
+        maxHeight = 600,
+        quality = 0.8,
+        format = 'webp'
+    } = options;
+
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                // 计算缩放比例
+                let width = img.width;
+                let height = img.height;
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width *= ratio;
+                    height *= ratio;
+                }
+
+                // 创建canvas并绘制图片
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // 转换为指定格式
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            resolve({
+                                blob: blob,
+                                url: URL.createObjectURL(blob),
+                                width: width,
+                                height: height
+                            });
+                        } else {
+                            reject(new Error('图片压缩失败'));
+                        }
+                    },
+                    `image/${format}`,
+                    quality
+                );
+            };
+            img.onerror = () => {
+                reject(new Error('图片加载失败'));
+            };
+        };
+        reader.onerror = () => {
+            reject(new Error('文件读取失败'));
+        };
+    });
+}
+
 // 编辑器上传图片
 function editorUploadImage() {
     document.getElementById('file-input').click();
@@ -437,9 +497,44 @@ document.getElementById('file-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (file) {
         try {
-            // 移除base64编码，直接使用文件路径或URL
-            alert('请直接输入图片URL或本地文件路径，不再支持base64编码');
+            // 检查文件大小（限制为5MB）
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                alert('图片大小不能超过5MB，请选择更小的图片');
+                return;
+            }
+
+            // 图片压缩和格式转换
+            const compressedImage = await compressImage(file, {
+                maxWidth: 1200,
+                maxHeight: 1200,
+                quality: 0.8,
+                format: 'webp'
+            });
+            
+            // 显示预览
+            const previewImg = document.getElementById('preview-image');
+            const imgButton = document.getElementById('img-button');
+            
+            previewImg.onload = () => {
+                previewImg.style.display = 'block';
+                imgButton.querySelector('span').style.display = 'none';
+            };
+            
+            previewImg.onerror = () => {
+                console.error('预览图片加载失败');
+                previewImg.style.display = 'none';
+                imgButton.querySelector('span').style.display = 'block';
+            };
+            
+            previewImg.src = compressedImage.url;
+            
+            // 保存压缩后的图片数据
+            editQuestions[editIndex].image = compressedImage.url;
+            editQuestions[editIndex].imageWidth = compressedImage.width;
+            editQuestions[editIndex].imageHeight = compressedImage.height;
         } catch (error) {
+            console.error('图片处理失败:', error);
             alert('图片上传失败');
         }
     }
@@ -583,33 +678,17 @@ async function preloadImages(questions) {
             progressText.textContent = `${progress}%`;
         };
         
-        // 加载单个图片的函数
-        const loadImage = (imageSrc) => {
-            return new Promise((resolve) => {
-                const img = new Image();
-                
-                img.onload = () => {
-                    loadedImages++;
-                    updateProgress();
-                    resolve();
-                };
-                
-                img.onerror = () => {
-                    console.warn('图片加载失败:', imageSrc);
-                    // 加载失败不中断，继续加载其他图片
-                    loadedImages++;
-                    updateProgress();
-                    resolve();
-                };
-                
-                img.src = imageSrc;
-            });
-        };
-        
-        // 批量加载图片
+        // 使用懒加载管理器预加载图片
         const loadAllImages = async () => {
             for (const imageSrc of imagesToLoad) {
-                await loadImage(imageSrc);
+                try {
+                    await imageLoader.loadImageWithRetry(imageSrc);
+                } catch (error) {
+                    console.warn('图片预加载失败:', error);
+                } finally {
+                    loadedImages++;
+                    updateProgress();
+                }
             }
             
             // 加载完成后延迟0.5秒隐藏加载框，让用户感知到加载完成
@@ -640,6 +719,182 @@ async function startGame(bank) {
     // 预加载完成后显示游戏页面
     showGamePage();
 }
+
+// 网络状态管理器
+class NetworkManager {
+    constructor() {
+        this.currentNetworkType = 'unknown';
+        this.isOnline = navigator.onLine;
+        this.networkQuality = 'good';
+        this.initNetworkListeners();
+    }
+
+    // 初始化网络监听器
+    initNetworkListeners() {
+        // 监听在线/离线状态变化
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            console.log('网络已连接');
+        });
+
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+            console.log('网络已断开');
+            alert('网络连接已断开，请检查网络设置');
+        });
+
+        // 监听网络类型变化
+        if ('connection' in navigator) {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            
+            const updateNetworkInfo = () => {
+                this.currentNetworkType = connection.effectiveType || 'unknown';
+                this.networkQuality = this.getNetworkQuality(connection);
+                console.log(`网络类型: ${this.currentNetworkType}, 质量: ${this.networkQuality}`);
+            };
+
+            updateNetworkInfo();
+            connection.addEventListener('change', updateNetworkInfo);
+        }
+    }
+
+    // 根据网络连接获取网络质量
+    getNetworkQuality(connection) {
+        const downlink = connection.downlink || 10;
+        const rtt = connection.rtt || 50;
+        
+        if (downlink < 1 || rtt > 500) {
+            return 'poor';
+        } else if (downlink < 3 || rtt > 200) {
+            return 'medium';
+        } else {
+            return 'good';
+        }
+    }
+
+    // 获取当前网络质量
+    getCurrentQuality() {
+        return this.networkQuality;
+    }
+
+    // 获取当前网络类型
+    getCurrentType() {
+        return this.currentNetworkType;
+    }
+
+    // 检查是否在线
+    isOnline() {
+        return this.isOnline;
+    }
+
+    // 根据网络质量获取图片加载配置
+    getImageLoadConfig() {
+        const configs = {
+            good: {
+                quality: 0.8,
+                timeout: 10000,
+                maxRetries: 3
+            },
+            medium: {
+                quality: 0.6,
+                timeout: 15000,
+                maxRetries: 2
+            },
+            poor: {
+                quality: 0.4,
+                timeout: 20000,
+                maxRetries: 1
+            }
+        };
+        return configs[this.networkQuality] || configs.good;
+    }
+}
+
+// 图片懒加载管理器
+class ImageLazyLoader {
+    constructor(networkManager) {
+        this.loadedImages = new Set();
+        this.imageCache = new Map();
+        this.networkManager = networkManager;
+    }
+
+    // 加载图片并处理失败重试
+    loadImageWithRetry(imageSrc, maxRetries = null, retryDelay = 1000) {
+        // 获取网络质量相关配置
+        const networkConfig = this.networkManager.getImageLoadConfig();
+        maxRetries = maxRetries !== null ? maxRetries : networkConfig.maxRetries;
+        const timeout = networkConfig.timeout;
+
+        return new Promise((resolve, reject) => {
+            let retries = 0;
+            let timeoutId;
+
+            const loadImage = () => {
+                // 检查缓存
+                if (this.imageCache.has(imageSrc)) {
+                    resolve(this.imageCache.get(imageSrc));
+                    return;
+                }
+
+                // 检查网络状态
+                if (!this.networkManager.isOnline) {
+                    reject(new Error('网络连接已断开'));
+                    return;
+                }
+
+                const img = new Image();
+                
+                img.onload = () => {
+                    clearTimeout(timeoutId);
+                    this.loadedImages.add(imageSrc);
+                    this.imageCache.set(imageSrc, img);
+                    resolve(img);
+                };
+                
+                img.onerror = () => {
+                    clearTimeout(timeoutId);
+                    retries++;
+                    if (retries <= maxRetries) {
+                        console.log(`图片加载失败，正在重试 (${retries}/${maxRetries}):`, imageSrc);
+                        setTimeout(loadImage, retryDelay);
+                    } else {
+                        console.error(`图片加载多次失败:`, imageSrc);
+                        reject(new Error(`图片加载失败: ${imageSrc}`));
+                    }
+                };
+                
+                // 设置超时
+                timeoutId = setTimeout(() => {
+                    img.onerror(new Error(`图片加载超时 (${timeout}ms): ${imageSrc}`));
+                }, timeout);
+                
+                img.src = imageSrc;
+            };
+            
+            loadImage();
+        });
+    }
+
+    // 预加载图片（用于游戏开始前）
+    async preloadImages(imageUrls) {
+        const promises = imageUrls.map(url => 
+            this.loadImageWithRetry(url).catch(err => {
+                console.error(`预加载图片失败:`, err);
+                return null;
+            })
+        );
+        return Promise.all(promises);
+    }
+
+    // 检查图片是否已加载
+    isLoaded(imageSrc) {
+        return this.loadedImages.has(imageSrc);
+    }
+}
+
+// 初始化网络管理器和图片懒加载管理器
+let networkManager;
+let imageLoader;
 
 // 显示游戏页面
 function showGamePage() {
@@ -676,21 +931,27 @@ function showGamePage() {
         gameImage.onload = null;
         gameImage.onerror = null;
         
-        // 添加图片加载事件处理
-        gameImage.onload = () => {
-            gameImage.style.display = 'block';
-        };
-        
-        gameImage.onerror = () => {
-            console.error('图片加载失败:', imageSrc);
-            gameImage.style.display = 'none';
-            // 可以在这里添加加载失败的提示
-            document.getElementById('result-text').textContent = '图片加载失败，请检查网络连接或图片URL';
-        };
-        
-        // 先重置图片源，然后设置新的图片源
-        gameImage.src = '';
-        gameImage.src = imageSrc;
+        // 使用懒加载管理器加载图片
+        imageLoader.loadImageWithRetry(imageSrc)
+            .then(() => {
+                // 图片加载成功，设置到游戏图片元素
+                gameImage.onload = () => {
+                    gameImage.style.display = 'block';
+                };
+                
+                gameImage.onerror = () => {
+                    console.error('游戏图片加载失败:', imageSrc);
+                    gameImage.style.display = 'none';
+                    document.getElementById('result-text').textContent = '图片加载失败，请检查网络连接或图片URL';
+                };
+                
+                gameImage.src = imageSrc;
+            })
+            .catch(error => {
+                console.error('使用懒加载加载图片失败:', error);
+                gameImage.style.display = 'none';
+                document.getElementById('result-text').textContent = '图片加载失败，请检查网络连接或图片URL';
+            });
     } else {
         gameImage.src = '';
         gameImage.style.display = 'none';
@@ -801,6 +1062,12 @@ async function loadInitialBanks() {
 window.addEventListener('DOMContentLoaded', () => {
     // 初始化音效管理器
     soundManager = new SoundManager();
+    
+    // 初始化网络管理器
+    networkManager = new NetworkManager();
+    
+    // 初始化图片懒加载管理器
+    imageLoader = new ImageLazyLoader(networkManager);
     
     // 加载初始题库（关键新增）
     loadInitialBanks().then(() => {
