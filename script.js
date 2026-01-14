@@ -603,6 +603,9 @@ function showGamePage() {
             imageSrc = QuestionBank.base64ToImage(currentQ.image);
         }
         
+        // 先将图片隐藏
+        gameImage.style.display = 'none';
+        
         // 清除之前的事件监听器
         gameImage.onload = null;
         gameImage.onerror = null;
@@ -619,7 +622,8 @@ function showGamePage() {
             document.getElementById('result-text').textContent = '图片加载失败，请检查网络连接或图片URL';
         };
         
-        // 设置图片源
+        // 先重置图片源，然后设置新的图片源
+        gameImage.src = '';
         gameImage.src = imageSrc;
     } else {
         gameImage.src = '';
