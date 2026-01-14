@@ -67,6 +67,7 @@ class SoundManager {
         this.bgmPlaying = false;
         this.loadSounds();
         this.setupEventListeners();
+        this.setupButtonClickSounds();
         this.updateBgmButton();
     }
     
@@ -160,6 +161,16 @@ class SoundManager {
 
         sfxVolumeSlider.addEventListener('input', (e) => {
             this.setSfxVolume(parseFloat(e.target.value));
+        });
+    }
+
+    setupButtonClickSounds() {
+        // 为所有圆角按钮添加点击音效
+        const buttons = document.querySelectorAll('.rounded-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                this.playSound('click');
+            });
         });
     }
 }
