@@ -50,13 +50,6 @@ function showAddBankPage() {
     loadEditorQuestion();
 }
 
-// 全局BGM开关函数
-function toggleBgm() {
-    if (soundManager) {
-        soundManager.toggleBgm();
-    }
-}
-
 // 音效管理器
 class SoundManager {
     constructor() {
@@ -397,18 +390,38 @@ function loadEditorQuestion() {
         
         if (imgData) {
             // 检查是否是URL（以http://或https://开头）
+            let imageSrc = '';
             if (imgData.startsWith('http://') || imgData.startsWith('https://')) {
                 // 是完整URL，直接使用
-                previewImg.src = imgData;
+                imageSrc = imgData;
             } else if (imgData.includes('\\') || imgData.includes('/')) {
                 // 是本地文件路径，构建完整URL
-                previewImg.src = `banks/${imgData.replace(/\\/g, '/')}`;
+                imageSrc = `banks/${imgData.replace(/\\/g, '/')}`;
             } else {
                 // 是base64编码，转换为data URL
-                previewImg.src = QuestionBank.base64ToImage(imgData);
+                imageSrc = QuestionBank.base64ToImage(imgData);
             }
-            previewImg.style.display = 'block';
-            imgButton.querySelector('span').style.display = 'none';
+            
+            // 清除之前的事件监听器
+            previewImg.onload = null;
+            previewImg.onerror = null;
+            
+            // 添加图片加载事件处理
+            previewImg.onload = () => {
+                previewImg.style.display = 'block';
+                imgButton.querySelector('span').style.display = 'none';
+            };
+            
+            previewImg.onerror = () => {
+                console.error('预览图片加载失败:', imageSrc);
+                previewImg.style.display = 'none';
+                imgButton.querySelector('span').style.display = 'block';
+                // 可以在这里添加加载失败的提示
+                alert('图片加载失败，请检查网络连接或图片URL');
+            };
+            
+            // 设置图片源
+            previewImg.src = imageSrc;
         } else {
             previewImg.src = '';
             previewImg.style.display = 'none';
@@ -576,23 +589,42 @@ function showGamePage() {
     document.getElementById('next-btn-container').style.display = 'none';
     
     const gameImage = document.getElementById('game-image');
-        if (currentQ.image) {
-            // 检查是否是URL（以http://或https://开头）
-            if (currentQ.image.startsWith('http://') || currentQ.image.startsWith('https://')) {
-                // 是完整URL，直接使用
-                gameImage.src = currentQ.image;
-            } else if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
-                // 是本地文件路径，构建完整URL
-                gameImage.src = `banks/${currentQ.image.replace(/\\/g, '/')}`;
-            } else {
-                // 是base64编码，转换为data URL
-                gameImage.src = QuestionBank.base64ToImage(currentQ.image);
-            }
-            gameImage.style.display = 'block';
+    if (currentQ.image) {
+        // 检查是否是URL（以http://或https://开头）
+        let imageSrc = '';
+        if (currentQ.image.startsWith('http://') || currentQ.image.startsWith('https://')) {
+            // 是完整URL，直接使用
+            imageSrc = currentQ.image;
+        } else if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
+            // 是本地文件路径，构建完整URL
+            imageSrc = `banks/${currentQ.image.replace(/\\/g, '/')}`;
         } else {
-            gameImage.src = '';
-            gameImage.style.display = 'none';
+            // 是base64编码，转换为data URL
+            imageSrc = QuestionBank.base64ToImage(currentQ.image);
         }
+        
+        // 清除之前的事件监听器
+        gameImage.onload = null;
+        gameImage.onerror = null;
+        
+        // 添加图片加载事件处理
+        gameImage.onload = () => {
+            gameImage.style.display = 'block';
+        };
+        
+        gameImage.onerror = () => {
+            console.error('图片加载失败:', imageSrc);
+            gameImage.style.display = 'none';
+            // 可以在这里添加加载失败的提示
+            document.getElementById('result-text').textContent = '图片加载失败，请检查网络连接或图片URL';
+        };
+        
+        // 设置图片源
+        gameImage.src = imageSrc;
+    } else {
+        gameImage.src = '';
+        gameImage.style.display = 'none';
+    }
     
     answeredCurrent = false;
 }
