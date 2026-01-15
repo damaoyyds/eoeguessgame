@@ -655,9 +655,14 @@ function editorPrev() {
 }
 
 function editorNext() {
+    saveEditorQuestion();
     if (editIndex < editQuestions.length - 1) {
-        saveEditorQuestion();
         editIndex++;
+        loadEditorQuestion();
+    } else {
+        // 没有下一题时自动添加新题
+        editQuestions.push({'image': '', 'question': '', 'answer': '', 'hint': ''});
+        editIndex = editQuestions.length - 1;
         loadEditorQuestion();
     }
 }
@@ -674,8 +679,22 @@ function editorClear() {
     if (editQuestions[editIndex].image && editQuestions[editIndex].image.startsWith('blob:')) {
         releaseBlobUrl(editQuestions[editIndex].image);
     }
-    editQuestions[editIndex] = {'image': '', 'question': '', 'answer': '', 'hint': ''};
-    loadEditorQuestion();
+    
+    // 删除当前题目
+    editQuestions.splice(editIndex, 1);
+    
+    // 如果删除后还有题目，回到上一题或保持在最后一题
+    if (editQuestions.length > 0) {
+        // 如果删除的是最后一题，保持在当前位置（即新的最后一题）
+        // 否则回到上一题
+        editIndex = Math.min(editIndex, editQuestions.length - 1);
+        loadEditorQuestion();
+    } else {
+        // 如果删除后没有题目了，添加一道新题
+        editQuestions.push({'image': '', 'question': '', 'answer': '', 'hint': ''});
+        editIndex = 0;
+        loadEditorQuestion();
+    }
 }
 
 function editorSave() {
@@ -698,6 +717,42 @@ function editorSave() {
     
     alert('保存成功！');
     showManagePage();
+}
+
+// 导出题库
+function exportBank() {
+    saveEditorQuestion();
+    const validQuestions = editQuestions.filter(q => q.answer);
+    
+    if (validQuestions.length === 0) {
+        alert('请至少添加一道有效题目（必须有答案）！');
+        return;
+    }
+    
+    const bankName = document.getElementById('edit-bank-name').value.trim() || '新题库';
+    const author = document.getElementById('edit-author').value.trim() || '未知';
+    
+    const bankData = {
+        id: editingBank ? editingBank.id : Date.now(),
+        name: bankName,
+        author: author,
+        questions: validQuestions,
+        count: validQuestions.length,
+        createdAt: editingBank ? editingBank.createdAt : new Date().toISOString()
+    };
+    
+    const jsonString = JSON.stringify(bankData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${bankName}_${new Date().getTime()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    alert('导出成功！');
 }
 
 // 导入题库
