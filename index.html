@@ -117,12 +117,6 @@
             <div class="background"></div>
             <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
             
-            <!-- 顶部ID和作者信息 -->
-            <div class="top-info">
-                <span id="game-id" class="outlined-text">ID 72</span>
-                <span id="game-author" class="outlined-text">作者: GIG</span>
-            </div>
-            
             <!-- 右上角图标 -->
             <div class="top-icons">
                 <button class="icon-btn" onclick="showHelp()">?</button>
@@ -132,6 +126,11 @@
             <div class="game-container">
                 <!-- 左侧单张图片 -->
                 <div class="game-left">
+                    <!-- 图片框上方的ID和作者信息 -->
+                    <div class="top-info">
+                        <span id="game-id" class="outlined-text">ID 72</span>
+                        <span id="game-author" class="outlined-text">作者: GIG</span>
+                    </div>
                     <div class="image-box">
                         <img id="game-image" src="" alt="游戏图片">
                         <div class="image-text" id="game-text">这是____</div>

@@ -554,15 +554,28 @@ h1.outlined-text {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 200px;
+    min-height: 350px;
+    width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .image-box img {
-    max-width: 90%;
-    max-height: 150px;
+    max-width: 95%;
+    max-height: 280px;
     object-fit: contain;
     margin-bottom: 15px;
+}
+
+/* 调整顶部信息在游戏左侧的样式 */
+.game-left .top-info {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: 15px;
+    align-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .image-text {
