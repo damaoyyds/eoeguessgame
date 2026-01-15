@@ -958,7 +958,7 @@ function showGamePage() {
     // 添加防御性检查，确保游戏数据有效
     if (!gameQuestions || gameQuestions.length === 0) {
         console.error('游戏题目列表为空');
-        document.getElementById('game-question').textContent = '游戏数据错误，请返回首页';
+        document.getElementById('game-text').textContent = '游戏数据错误，请返回首页';
         return;
     }
     
@@ -968,15 +968,96 @@ function showGamePage() {
     const currentQ = gameQuestions[gameIndex];
     
     // 更新游戏信息
-    document.getElementById('game-author').textContent = `作者：${gameAuthor || '未知'}`;
-    document.getElementById('game-progress').textContent = `第 ${gameIndex + 1} / ${gameQuestions.length} 题`;
+    document.getElementById('game-id').textContent = `ID ${gameIndex + 1}`;
+    document.getElementById('game-author').textContent = `作者: ${gameAuthor || '未知'}`;
     
-    // 设置问题和图片
-    document.getElementById('game-question').textContent = currentQ.question || '猜猜这是什么？';
-    document.getElementById('game-answer-input').value = '';
+    // 设置图片和文本
+    document.getElementById('game-text').textContent = currentQ.question || '这是____';
+    
+    // 根据答案长度动态生成输入框
+    const answerSection = document.querySelector('.answer-section');
+    const existingInputsContainer = answerSection.querySelector('.answer-inputs');
+    
+    // 移除现有的输入框容器
+    if (existingInputsContainer) {
+        existingInputsContainer.remove();
+    }
+    
+    // 创建新的输入框容器
+    const newInputsContainer = document.createElement('div');
+    newInputsContainer.className = 'answer-inputs';
+    
+    // 获取答案长度，默认为4
+    const answerLength = currentQ.answer ? currentQ.answer.length : 4;
+    
+    // 生成对应数量的输入框
+    for (let i = 0; i < answerLength; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'answer-input';
+        input.maxLength = 1; // 每个输入框只能输入一个字
+        input.placeholder = '';
+        input.style.textTransform = 'uppercase'; // 自动转换为大写（可选）
+        
+        // 输入法状态跟踪
+        let isComposing = false;
+        
+        // 监听输入法开始
+        input.addEventListener('compositionstart', function() {
+            isComposing = true;
+        });
+        
+        // 监听输入法结束
+        input.addEventListener('compositionend', function(e) {
+            isComposing = false;
+            // 输入法结束后，如果输入了内容，自动跳到下一个输入框
+            if (this.value.length === 1) {
+                const nextInput = this.nextElementSibling;
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        });
+        
+        // 添加输入事件监听，自动聚焦到下一个输入框
+        input.addEventListener('input', function(e) {
+            // 非输入法状态下，输入长度为1时自动跳到下一个输入框
+            if (!isComposing && this.value.length === 1) {
+                const nextInput = this.nextElementSibling;
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+        });
+        
+        // 添加键盘事件监听，支持退格键导航
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace') {
+                if (this.value.length === 0) {
+                    // 当前输入框为空，退格键聚焦到上一个输入框
+                    const prevInput = this.previousElementSibling;
+                    if (prevInput) {
+                        prevInput.focus();
+                        prevInput.value = '';
+                    }
+                } else {
+                    // 当前输入框有内容，退格键清空当前输入框
+                    this.value = '';
+                }
+            }
+        });
+        
+        newInputsContainer.appendChild(input);
+    }
+    
+    // 将新生成的输入框容器添加到答题区域
+    const answerButtons = answerSection.querySelector('.answer-buttons');
+    answerSection.insertBefore(newInputsContainer, answerButtons);
+    
     document.getElementById('result-text').textContent = '';
     document.getElementById('next-btn-container').style.display = 'none';
     
+    // 处理图片显示
     const gameImage = document.getElementById('game-image');
     if (currentQ.image) {
         // 使用公共函数处理图片URL
@@ -1019,7 +1100,13 @@ function showGamePage() {
 function checkAnswer() {
     if (answeredCurrent) return;
     
-    const userAnswer = document.getElementById('game-answer-input').value.trim();
+    // 获取四个输入框的答案
+    const answerInputs = document.querySelectorAll('.answer-input');
+    let userAnswer = '';
+    answerInputs.forEach(input => {
+        userAnswer += input.value.trim();
+    });
+    
     const correctAnswer = gameQuestions[gameIndex].answer;
     attemptCount++;
     
@@ -1032,6 +1119,19 @@ function checkAnswer() {
     } else {
         soundManager.playSound('lose');
         document.getElementById('result-text').textContent = '答错啦~';
+    }
+}
+
+// 显示帮助
+function showHelp() {
+    alert('游戏规则：\n1. 观察左侧两张图片\n2. 根据图片内容猜测四字词语\n3. 在右侧四个输入框中输入答案\n4. 点击确定按钮检查答案\n5. 点击灯泡图标获取提示');
+}
+
+// 显示游戏菜单
+function showGameMenu() {
+    const menu = confirm('游戏菜单：\n\n1. 返回首页\n2. 继续游戏\n\n选择"确定"返回首页，选择"取消"继续游戏');
+    if (menu) {
+        showMainPage();
     }
 }
 

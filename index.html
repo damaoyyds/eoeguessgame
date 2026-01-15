@@ -116,26 +116,43 @@
         <div id="game-page" class="page">
             <div class="background"></div>
             <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
-            <div class="game-info">
-                <span id="game-author" class="outlined-text"></span>
-                <span id="game-progress" class="outlined-text"></span>
+            
+            <!-- 顶部ID和作者信息 -->
+            <div class="top-info">
+                <span id="game-id" class="outlined-text">ID 72</span>
+                <span id="game-author" class="outlined-text">作者: GIG</span>
             </div>
+            
+            <!-- 右上角图标 -->
+            <div class="top-icons">
+                <button class="icon-btn" onclick="showHelp()">?</button>
+                <button class="icon-btn" onclick="showGameMenu()">☰</button>
+            </div>
+            
             <div class="game-container">
+                <!-- 左侧单张图片 -->
                 <div class="game-left">
-                    <div id="game-image-container">
+                    <div class="image-box">
                         <img id="game-image" src="" alt="游戏图片">
+                        <div class="image-text" id="game-text">这是____</div>
                     </div>
                 </div>
+                
+                <!-- 右侧答题区域 -->
                 <div class="game-right">
-                    <h3 id="game-question" class="outlined-text"></h3>
-                    <input type="text" id="game-answer-input" placeholder="请输入答案">
-                    <div class="divider"></div>
-                    <div id="result-text" class="outlined-text"></div>
-                    <div class="button-group">
-                        <button class="rounded-button" onclick="checkAnswer()">回答</button>
-                        <button class="rounded-button" onclick="showHint()">提示</button>
-                        <button class="rounded-button" onclick="giveUp()">放弃</button>
+                    <div class="answer-section">
+                        <div class="answer-inputs">
+                            <input type="text" class="answer-input" maxlength="1" placeholder="">
+                            <input type="text" class="answer-input" maxlength="1" placeholder="">
+                            <input type="text" class="answer-input" maxlength="1" placeholder="">
+                            <input type="text" class="answer-input" maxlength="1" placeholder="">
+                        </div>
+                        <div class="answer-buttons">
+                            <button class="rounded-button" onclick="checkAnswer()">确定</button>
+                            <button class="hint-btn" onclick="showHint()">💡</button>
+                        </div>
                     </div>
+                    <div id="result-text" class="outlined-text"></div>
                     <div id="next-btn-container" style="display: none;">
                         <button class="rounded-button success" onclick="nextQuestion()">下一题</button>
                     </div>
