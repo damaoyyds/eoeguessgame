@@ -193,12 +193,13 @@ class SoundManager {
     }
 
     setupButtonClickSounds() {
-        // 为所有圆角按钮添加点击音效，但排除确认按钮（回答按钮）
+        // 为所有圆角按钮添加点击音效，但排除确认按钮（回答按钮）和下一题按钮
         const buttons = document.querySelectorAll('.rounded-button');
         buttons.forEach(button => {
-            // 检查按钮是否为确认按钮（回答按钮）
+            // 检查按钮是否为确认按钮（回答按钮）或下一题按钮
             const isCheckAnswerButton = button.onclick && button.onclick.toString().includes('checkAnswer');
-            if (!isCheckAnswerButton) {
+            const isNextButton = button.onclick && button.onclick.toString().includes('nextQuestion');
+            if (!isCheckAnswerButton && !isNextButton) {
                 button.addEventListener('click', () => {
                     this.playSound('click');
                 });
