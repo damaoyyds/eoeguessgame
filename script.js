@@ -716,7 +716,6 @@ function editorSave() {
     }
     
     alert('保存成功！');
-    showManagePage();
 }
 
 // 导出题库（支持编辑页面和管理页面调用）
