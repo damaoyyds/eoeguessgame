@@ -995,7 +995,6 @@ function showGamePage() {
         const input = document.createElement('input');
         input.type = 'text';
         input.className = 'answer-input';
-        input.maxLength = 1; // 每个输入框只能输入一个字
         input.placeholder = '';
         input.style.textTransform = 'uppercase'; // 自动转换为大写（可选）
         
@@ -1010,23 +1009,15 @@ function showGamePage() {
         // 监听输入法结束
         input.addEventListener('compositionend', function(e) {
             isComposing = false;
-            // 输入法结束后，如果输入了内容，自动跳到下一个输入框
-            if (this.value.length === 1) {
-                const nextInput = this.nextElementSibling;
-                if (nextInput) {
-                    nextInput.focus();
-                }
-            }
+            // 输入法结束后，处理输入的内容
+            handleMultiCharacterInput(this, this.value);
         });
         
-        // 添加输入事件监听，自动聚焦到下一个输入框
+        // 添加输入事件监听，处理多字符输入
         input.addEventListener('input', function(e) {
-            // 非输入法状态下，输入长度为1时自动跳到下一个输入框
-            if (!isComposing && this.value.length === 1) {
-                const nextInput = this.nextElementSibling;
-                if (nextInput) {
-                    nextInput.focus();
-                }
+            // 处理输入的内容，支持多字符自动分配
+            if (!isComposing) {
+                handleMultiCharacterInput(this, this.value);
             }
         });
         
@@ -1101,6 +1092,42 @@ function showGamePage() {
     }
     
     answeredCurrent = false;
+}
+
+// 处理多字符输入，自动分配到后面的输入框
+function handleMultiCharacterInput(currentInput, inputValue) {
+    if (!inputValue) return;
+    
+    // 获取所有输入框
+    const allInputs = Array.from(document.querySelectorAll('.answer-input'));
+    const currentIndex = allInputs.indexOf(currentInput);
+    
+    if (currentIndex === -1) return;
+    
+    // 清除当前输入框及后面所有输入框的内容
+    for (let i = currentIndex; i < allInputs.length; i++) {
+        allInputs[i].value = '';
+    }
+    
+    // 将输入内容分配到当前及后面的输入框
+    let charIndex = 0;
+    for (let i = currentIndex; i < allInputs.length && charIndex < inputValue.length; i++) {
+        allInputs[i].value = inputValue[charIndex];
+        charIndex++;
+    }
+    
+    // 聚焦到最后一个有内容的输入框的下一个输入框
+    const nextIndex = Math.min(currentIndex + inputValue.length, allInputs.length - 1);
+    if (charIndex < inputValue.length) {
+        // 如果输入内容还有剩余，聚焦到最后一个输入框
+        allInputs[allInputs.length - 1].focus();
+    } else {
+        // 否则聚焦到下一个空输入框
+        const nextInput = allInputs[nextIndex];
+        if (nextInput) {
+            nextInput.focus();
+        }
+    }
 }
 
 // 检查答案
