@@ -120,7 +120,7 @@
             <!-- 右上角图标 -->
             <div class="top-icons">
                 <button class="icon-btn" onclick="showHelp()">?</button>
-                <button class="icon-btn" onclick="showGameMenu()">☰</button>
+                <button class="icon-btn" onclick="showSettingsPage()">⚙️</button>
             </div>
             
             <div class="game-container">
@@ -193,6 +193,52 @@
             <div class="progress-bar-container">
                 <div id="progress-bar" class="progress-bar"></div>
                 <div id="progress-text" class="outlined-text">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置弹窗 -->
+    <div id="settings-modal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="outlined-text">设置</h1>
+                <button class="close-btn" onclick="closeSettingsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-container">
+                    <div class="setting-item">
+                        <label class="outlined-text">背景音乐音量</label>
+                        <input type="range" id="bgm-volume" min="0" max="1" step="0.1" value="0.5">
+                    </div>
+                    <div class="setting-item">
+                        <label class="outlined-text">音效音量</label>
+                        <input type="range" id="sfx-volume" min="0" max="1" step="0.1" value="0.5">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div id="help-modal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="outlined-text">游戏规则</h1>
+                <button class="close-btn" onclick="closeHelpModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <div class="outlined-text" style="text-align: left; line-height: 1.8; font-size: 18px; margin-bottom: 20px;">
+                        <p>1. 观察图片</p>
+                        <p>2. 根据图片内容猜测词语</p>
+                        <p>3. 在输入框输入答案</p>
+                        <p>4. 点击回答按钮检查答案，如果部分字对了，对了的字将会变绿</p>
+                        <p>5. 点击灯泡按钮可以获得提示</p>
+                    </div>
+                    <div class="outlined-text" style="text-align: center; font-size: 20px; color: #FF6B6B;">希望大家玩的开心！</div>
+                </div>
             </div>
         </div>
     </div>

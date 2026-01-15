@@ -62,7 +62,11 @@ function showMainPage() {
 }
 
 function showSettingsPage() {
-    showPage('settings-page');
+    document.getElementById('settings-modal').style.display = 'flex';
+}
+
+function closeSettingsModal() {
+    document.getElementById('settings-modal').style.display = 'none';
 }
 
 function showManagePage() {
@@ -1201,16 +1205,14 @@ function updateWrongAnswersDisplay() {
 
 // 显示帮助
 function showHelp() {
-    alert('游戏规则：\n1. 观察左侧两张图片\n2. 根据图片内容猜测四字词语\n3. 在右侧四个输入框中输入答案\n4. 点击确定按钮检查答案\n5. 点击灯泡图标获取提示');
+    document.getElementById('help-modal').style.display = 'flex';
 }
 
-// 显示游戏菜单
-function showGameMenu() {
-    const menu = confirm('游戏菜单：\n\n1. 返回首页\n2. 继续游戏\n\n选择"确定"返回首页，选择"取消"继续游戏');
-    if (menu) {
-        showMainPage();
-    }
+function closeHelpModal() {
+    document.getElementById('help-modal').style.display = 'none';
 }
+
+
 
 // 显示提示
 function showHint() {
