@@ -18,7 +18,7 @@
                 <div class="decoration">- * - * -</div>
                 <div class="button-group-vertical">
                     <button class="rounded-button" onclick="showSelectBankPage()">开始游戏</button>
-                    <button class="rounded-button" onclick="showManagePage()">管理题库</button>
+                    <button class="rounded-button" onclick="showAddBankPage()">我要出题</button>
                     <button class="rounded-button" onclick="showSettingsPage()">设置</button>
                 </div>
             </div>
@@ -53,67 +53,83 @@
         <!-- 管理题库页面 -->
         <div id="manage-page" class="page">
             <div class="background"></div>
-            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
-            <h1 class="outlined-text title">管理题库</h1>
-            <div class="button-row">
-                <button class="rounded-button" onclick="showAddBankPage()">新增题库</button>
-                <button class="rounded-button" onclick="importBank()">导入题库</button>
-            </div>
-            <div class="bank-list-container">
-                <div id="bank-list" class="bank-list"></div>
+            <div class="page-content">
+                <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+                <h1 class="outlined-text title">管理题库</h1>
+                <div class="button-row">
+                    <button class="rounded-button" onclick="showAddBankPage()">新增题库</button>
+                    <button class="rounded-button" onclick="importBank()">导入题库</button>
+                </div>
+                <div class="bank-list-container">
+                    <div id="bank-list" class="bank-list"></div>
+                </div>
             </div>
         </div>
 
         <!-- 选择题库页面 -->
         <div id="select-bank-page" class="page">
             <div class="background"></div>
-            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
-            <h1 class="outlined-text title">选择题库</h1>
-            <div class="bank-list-container">
-                <div id="select-bank-list" class="bank-list"></div>
+            <div class="page-content">
+                <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+                <h1 class="outlined-text title">选择题库</h1>
+                <div class="bank-list-container">
+                    <div id="select-bank-list" class="bank-list"></div>
+                </div>
             </div>
         </div>
 
         <!-- 编辑题库页面 -->
         <div id="edit-bank-page" class="page">
             <div class="background"></div>
-            <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
-            <div class="edit-header">
-                <div class="edit-info">
-                    <input type="text" id="edit-bank-name" placeholder="题库名称" value="新题库">
-                    <input type="text" id="edit-author" placeholder="作者">
-                    <div id="question-info" class="outlined-text">第 1 / 1 题 (有效: 0)</div>
+            <div class="page-content">
+                <button class="rounded-button small home-btn" onclick="showMainPage()">返回首页</button>
+                <h1 class="outlined-text title">我要出题</h1>
+                
+                <div class="form-section">
+                    <div class="bank-info">
+                        <div class="bank-info-item">
+                            <input type="text" id="edit-bank-name" placeholder="题库名称" value="新题库">
+                        </div>
+                        <div class="bank-info-item">
+                            <input type="text" id="edit-author" placeholder="作者">
+                        </div>
+                    </div>
+                    
+                    <div id="question-info" class="question-info outlined-text">第 1 / 1 题 (有效: 0)</div>
                 </div>
-            </div>
-            <div class="edit-container">
-                <div class="edit-left">
-                    <h3 class="outlined-text">题目图片 (点击上传)</h3>
-                    <div id="img-button" class="image-button" onclick="editorUploadImage()">
-                        <span>点击此处上传图片</span>
-                        <img id="preview-image" src="" alt="预览图" style="display: none;">
+                
+                <div class="main-content">
+                    <div class="edit-left">
+                        <h3 class="outlined-text">题目图片 (点击上传)</h3>
+                        <div id="img-button" class="image-button" onclick="editorUploadImage()">
+                            <span>点击此处上传图片</span>
+                            <img id="preview-image" src="" alt="预览图" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="edit-right">
+                        <div class="form-item">
+                            <label class="outlined-text">问题:</label>
+                            <input type="text" id="edit-question" placeholder="请输入问题">
+                        </div>
+                        <div class="form-item">
+                            <label class="outlined-text">答案:</label>
+                            <input type="text" id="edit-answer" placeholder="请输入答案">
+                        </div>
+                        <div class="form-item">
+                            <label class="outlined-text">提示:</label>
+                            <input type="text" id="edit-hint" placeholder="请输入提示">
+                        </div>
                     </div>
                 </div>
-                <div class="edit-right">
-                    <div class="form-item">
-                        <label class="outlined-text">问题:</label>
-                        <input type="text" id="edit-question" placeholder="请输入问题">
-                    </div>
-                    <div class="form-item">
-                        <label class="outlined-text">答案:</label>
-                        <input type="text" id="edit-answer" placeholder="请输入答案">
-                    </div>
-                    <div class="form-item">
-                        <label class="outlined-text">提示:</label>
-                        <input type="text" id="edit-hint" placeholder="请输入提示">
-                    </div>
+                
+                <div class="edit-buttons">
+                    <button class="rounded-button" onclick="editorPrev()">上一题</button>
+                    <button class="rounded-button" onclick="editorNext()">下一题</button>
+                    <button class="rounded-button" onclick="editorAdd()">增加一题</button>
+                    <button class="rounded-button" onclick="editorClear()">清除本题</button>
+                    <button class="rounded-button success" onclick="editorSave()">保存题库</button>
                 </div>
-            </div>
-            <div class="edit-buttons">
-                <button class="rounded-button" onclick="editorPrev()">上一题</button>
-                <button class="rounded-button" onclick="editorNext()">下一题</button>
-                <button class="rounded-button" onclick="editorAdd()">增加一题</button>
-                <button class="rounded-button" onclick="editorClear()">清除本题</button>
-                <button class="rounded-button success" onclick="editorSave()">保存题库</button>
             </div>
         </div>
 
