@@ -49,7 +49,7 @@ button {
 
 /* 背景 */
 .background {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -71,8 +71,6 @@ button {
     background-repeat: no-repeat;
     opacity: 0.5;
     z-index: -1;
-    /* 优化移动端背景显示 */
-    background-attachment: fixed;
 }
 
 /* 响应式背景优化 */
