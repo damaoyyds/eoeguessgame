@@ -680,6 +680,27 @@ h1.outlined-text {
     gap: 15px;
     margin-bottom: 20px;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* 响应式调整：手机端按钮样式 */
+@media (max-width: 768px) {
+    .answer-buttons {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: nowrap;
+    }
+    
+    .answer-buttons .rounded-button {
+        width: auto;
+        max-width: none;
+        padding: 8px 12px;
+        font-size: 14px;
+        margin: 0;
+        flex: 1;
+    }
 }
 
 .hint-btn {
