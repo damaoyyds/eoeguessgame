@@ -719,40 +719,136 @@ function editorSave() {
     showManagePage();
 }
 
-// 导出题库
-function exportBank() {
-    saveEditorQuestion();
-    const validQuestions = editQuestions.filter(q => q.answer);
+// 导出题库（支持编辑页面和管理页面调用）
+function exportBank(bank) {
+    let bankData, questions, bankName;
     
-    if (validQuestions.length === 0) {
-        alert('请至少添加一道有效题目（必须有答案）！');
-        return;
+    if (bank) {
+        // 管理页面调用：使用传入的bank对象
+        bankName = bank.name;
+        questions = bank.questions;
+        bankData = {
+            id: bank.id,
+            name: bank.name,
+            author: bank.author,
+            questions: bank.questions,
+            count: bank.questions.length,
+            createdAt: bank.createdAt
+        };
+    } else {
+        // 编辑页面调用：使用当前编辑的题库数据
+        saveEditorQuestion();
+        const validQuestions = editQuestions.filter(q => q.answer);
+        
+        if (validQuestions.length === 0) {
+            alert('请至少添加一道有效题目（必须有答案）！');
+            return;
+        }
+        
+        bankName = document.getElementById('edit-bank-name').value.trim() || '新题库';
+        const author = document.getElementById('edit-author').value.trim() || '未知';
+        
+        questions = validQuestions;
+        bankData = {
+            id: editingBank ? editingBank.id : Date.now(),
+            name: bankName,
+            author: author,
+            questions: validQuestions,
+            count: validQuestions.length,
+            createdAt: editingBank ? editingBank.createdAt : new Date().toISOString()
+        };
     }
     
-    const bankName = document.getElementById('edit-bank-name').value.trim() || '新题库';
-    const author = document.getElementById('edit-author').value.trim() || '未知';
+    // 创建压缩文件
+    const zip = new JSZip();
+    const imagesFolder = zip.folder('images');
     
-    const bankData = {
-        id: editingBank ? editingBank.id : Date.now(),
-        name: bankName,
-        author: author,
-        questions: validQuestions,
-        count: validQuestions.length,
-        createdAt: editingBank ? editingBank.createdAt : new Date().toISOString()
-    };
+    // 复制题目数据，用于修改图片路径
+    const exportQuestions = JSON.parse(JSON.stringify(questions));
     
-    const jsonString = JSON.stringify(bankData, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${bankName}_${new Date().getTime()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // 下载并添加图片到压缩包的Promise数组
+    const imagePromises = [];
     
-    alert('导出成功！');
+    exportQuestions.forEach((q, index) => {
+        if (q.image && q.image.startsWith('blob:')) {
+            // 处理blob URL图片（仅编辑页面会有）
+            const promise = new Promise((resolve) => {
+                fetch(q.image)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        // 生成唯一的图片文件名
+                        const imageName = `question_${index + 1}_${Date.now()}.webp`;
+                        // 将图片添加到压缩包
+                        imagesFolder.file(imageName, blob);
+                        // 更新题目中的图片路径
+                        q.image = `images/${imageName}`;
+                        resolve();
+                    })
+                    .catch(() => {
+                        // 处理失败时保留原始路径
+                        resolve();
+                    });
+            });
+            imagePromises.push(promise);
+        } else if (q.image && (q.image.startsWith('http://') || q.image.startsWith('https://'))) {
+            // 处理外部URL图片
+            const promise = new Promise((resolve) => {
+                fetch(q.image)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        // 生成唯一的图片文件名
+                        const extension = q.image.split('.').pop().split('?')[0] || 'jpg';
+                        const imageName = `question_${index + 1}_${Date.now()}.${extension}`;
+                        // 将图片添加到压缩包
+                        imagesFolder.file(imageName, blob);
+                        // 更新题目中的图片路径
+                        q.image = `images/${imageName}`;
+                        resolve();
+                    })
+                    .catch(() => {
+                        // 处理失败时保留原始路径
+                        resolve();
+                    });
+            });
+            imagePromises.push(promise);
+        }
+        // 如果是相对路径或空值，不处理
+    });
+    
+    // 等待所有图片处理完成
+    Promise.all(imagePromises)
+        .then(() => {
+            // 更新bankData中的题目为处理后的题目
+            bankData.questions = exportQuestions;
+            bankData.count = exportQuestions.length;
+            
+            // 添加JSON文件到压缩包
+            const jsonString = JSON.stringify(bankData, null, 2);
+            zip.file('bank.json', jsonString);
+            
+            // 生成压缩包并下载
+            zip.generateAsync({ type: 'blob' })
+                .then(content => {
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${bankName}_${new Date().getTime()}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('导出成功！');
+                })
+                .catch(err => {
+                    console.error('生成压缩包失败:', err);
+                    alert('导出失败！请重试。');
+                });
+        })
+        .catch(err => {
+            console.error('处理图片失败:', err);
+            alert('导出失败！请重试。');
+        });
 }
 
 // 导入题库
@@ -778,17 +874,7 @@ document.getElementById('bank-import-input').addEventListener('change', (e) => {
     }
 });
 
-// 导出题库
-function exportBank(bank) {
-    const dataStr = JSON.stringify(bank, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${bank.name}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-}
+
 
 // 删除题库
 function deleteBank(bank) {
