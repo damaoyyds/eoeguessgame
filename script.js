@@ -529,9 +529,9 @@ function saveEditorQuestion() {
 // 图片压缩和格式转换函数
 async function compressImage(file, options = {}) {
     const {
-        maxWidth = 800,
-        maxHeight = 600,
-        quality = 0.8,
+        maxWidth = 1920,
+        maxHeight = 1080,
+        quality = 0.95,
         format = 'webp'
     } = options;
 
@@ -605,9 +605,9 @@ document.getElementById('file-input').addEventListener('change', async (e) => {
 
             // 图片压缩和格式转换
             const compressedImage = await compressImage(file, {
-                maxWidth: 1200,
-                maxHeight: 1200,
-                quality: 0.8,
+                maxWidth: 1920,
+                maxHeight: 1080,
+                quality: 0.95,
                 format: 'webp'
             });
             
