@@ -838,7 +838,7 @@ function exportBank(bank) {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                     
-                    alert('导出成功！');
+                    showExportSuccessModal();
                 })
                 .catch(err => {
                     console.error('生成压缩包失败:', err);
@@ -1417,6 +1417,16 @@ function showHelp() {
 
 function closeHelpModal() {
     document.getElementById('help-modal').style.display = 'none';
+}
+
+// 显示导出成功弹窗
+function showExportSuccessModal() {
+    document.getElementById('export-success-modal').style.display = 'flex';
+}
+
+// 关闭导出成功弹窗
+function closeExportSuccessModal() {
+    document.getElementById('export-success-modal').style.display = 'none';
 }
 
 
