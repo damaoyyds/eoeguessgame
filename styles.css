@@ -657,6 +657,21 @@ h1.outlined-text {
     margin: 30px 0;
 }
 
+/* 手机端答案输入框换行处理 */
+@media (max-width: 768px) {
+    .answer-inputs {
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 350px; /* 5个输入框的最大宽度：5*(60+15)px */
+    }
+    
+    .wrong-answer-item {
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 350px; /* 5个字符框的最大宽度：5*(60+15)px */
+    }
+}
+
 .answer-input {
     width: 60px;
     height: 60px;

@@ -1243,7 +1243,7 @@ function showGameComplete() {
     showPage('complete-page');
     soundManager.playSound('clear');
     
-    const total = attemptCount + gaveUpCount;
+    const total = gameQuestions.length;
     const accuracy = total > 0 ? (correctCount / total * 100).toFixed(1) : 0;
     
     document.getElementById('stats-correct').textContent = `答对: ${correctCount}`;
