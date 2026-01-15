@@ -62,6 +62,24 @@ function showMainPage() {
 }
 
 function showSettingsPage() {
+    // 确保所有滑块值与当前音量同步
+    const currentBgmVolume = soundManager.bgmVolume;
+    const currentSfxVolume = soundManager.sfxVolume;
+    
+    // 更新所有bgm音量滑块
+    document.querySelectorAll('[id^="bgm-volume"]').forEach(slider => {
+        slider.value = currentBgmVolume;
+    });
+    
+    // 更新所有音效音量滑块
+    document.querySelectorAll('[id^="sfx-volume"]').forEach(slider => {
+        slider.value = currentSfxVolume;
+    });
+    
+    // 确保BGM开关图标显示正确
+    soundManager.updateBgmButton();
+    
+    // 显示设置弹窗而不是页面
     document.getElementById('settings-modal').style.display = 'flex';
 }
 
@@ -101,13 +119,32 @@ class SoundManager {
         this.setupEventListeners();
         this.setupButtonClickSounds();
         this.updateBgmButton();
+        
+        // 初始化所有音量滑块的值
+        this.updateAllVolumeSliders();
+    }
+    
+    // 更新所有音量滑块的值
+    updateAllVolumeSliders() {
+        // 更新所有bgm音量滑块
+        document.querySelectorAll('[id^="bgm-volume"]').forEach(slider => {
+            slider.value = this.bgmVolume;
+        });
+        
+        // 更新所有音效音量滑块
+        document.querySelectorAll('[id^="sfx-volume"]').forEach(slider => {
+            slider.value = this.sfxVolume;
+        });
     }
     
     updateBgmButton() {
-        const btn = document.getElementById('bgm-toggle-btn');
-        if (btn) {
-            btn.innerHTML = this.bgmPlaying ? '🔊' : '🔇';
-        }
+        // 更新所有背景音乐开关按钮（包括页面和弹窗）
+        const btnElements = document.querySelectorAll('[id^="bgm-toggle-btn"]');
+        btnElements.forEach(btn => {
+            if (btn) {
+                btn.innerHTML = this.bgmPlaying ? '🔊' : '🔇';
+            }
+        });
     }
 
     loadSounds() {
@@ -138,6 +175,7 @@ class SoundManager {
                 console.log('背景音乐播放失败:', e);
             });
             this.bgmPlaying = true;
+            this.updateBgmButton();
         }
     }
 
@@ -145,6 +183,7 @@ class SoundManager {
         if (this.bgm) {
             this.bgm.pause();
             this.bgmPlaying = false;
+            this.updateBgmButton();
         }
     }
 
@@ -154,7 +193,6 @@ class SoundManager {
         } else {
             this.playBgm();
         }
-        this.updateBgmButton();
         return this.bgmPlaying;
     }
 
@@ -183,16 +221,39 @@ class SoundManager {
     }
 
     setupEventListeners() {
-        // 音量控制
-        const bgmVolumeSlider = document.getElementById('bgm-volume');
-        const sfxVolumeSlider = document.getElementById('sfx-volume');
-
-        bgmVolumeSlider.addEventListener('input', (e) => {
-            this.setBgmVolume(parseFloat(e.target.value));
+        // 音量控制 - 直接绑定事件，确保this指向正确
+        const self = this;
+        
+        // 为所有bgm音量滑块添加事件监听（包括页面和弹窗）
+        const bgmVolumeSliders = document.querySelectorAll('[id^="bgm-volume"]');
+        bgmVolumeSliders.forEach(slider => {
+            // 先移除现有的事件监听器，防止重复绑定
+            slider.removeEventListener('input', bgmVolumeHandler);
+            function bgmVolumeHandler(e) {
+                const volume = parseFloat(e.target.value);
+                self.setBgmVolume(volume);
+                // 同步所有bgm音量滑块的值
+                document.querySelectorAll('[id^="bgm-volume"]').forEach(s => {
+                    s.value = volume;
+                });
+            }
+            slider.addEventListener('input', bgmVolumeHandler);
         });
-
-        sfxVolumeSlider.addEventListener('input', (e) => {
-            this.setSfxVolume(parseFloat(e.target.value));
+        
+        // 为所有音效音量滑块添加事件监听（包括页面和弹窗）
+        const sfxVolumeSliders = document.querySelectorAll('[id^="sfx-volume"]');
+        sfxVolumeSliders.forEach(slider => {
+            // 先移除现有的事件监听器，防止重复绑定
+            slider.removeEventListener('input', sfxVolumeHandler);
+            function sfxVolumeHandler(e) {
+                const volume = parseFloat(e.target.value);
+                self.setSfxVolume(volume);
+                // 同步所有音效音量滑块的值
+                document.querySelectorAll('[id^="sfx-volume"]').forEach(s => {
+                    s.value = volume;
+                });
+            }
+            slider.addEventListener('input', sfxVolumeHandler);
         });
     }
 
