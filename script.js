@@ -13,6 +13,41 @@ let attemptCount = 0;
 let gaveUpCount = 0;
 let answeredCurrent = false;
 
+// 用于跟踪和释放blob URL，避免内存泄漏
+let blobUrls = new Set();
+
+// 公共函数：处理图片URL
+function getImageSrc(imgData) {
+    if (!imgData) return '';
+    
+    // 检查是否是URL（以http://或https://开头）
+    if (imgData.startsWith('http://') || imgData.startsWith('https://')) {
+        // 是完整URL，直接使用
+        return imgData;
+    } else if (imgData.includes('\\') || imgData.includes('/')) {
+        // 是相对路径，直接使用
+        return imgData.replace(/\\/g, '/');
+    }
+    
+    return imgData;
+}
+
+// 释放blob URL的函数
+function releaseBlobUrl(url) {
+    if (url && url.startsWith('blob:') && blobUrls.has(url)) {
+        URL.revokeObjectURL(url);
+        blobUrls.delete(url);
+    }
+}
+
+// 释放所有blob URL
+function releaseAllBlobUrls() {
+    blobUrls.forEach(url => {
+        URL.revokeObjectURL(url);
+    });
+    blobUrls.clear();
+}
+
 // 页面切换函数
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
@@ -158,12 +193,16 @@ class SoundManager {
     }
 
     setupButtonClickSounds() {
-        // 为所有圆角按钮添加点击音效
+        // 为所有圆角按钮添加点击音效，但排除确认按钮（回答按钮）
         const buttons = document.querySelectorAll('.rounded-button');
         buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                this.playSound('click');
-            });
+            // 检查按钮是否为确认按钮（回答按钮）
+            const isCheckAnswerButton = button.onclick && button.onclick.toString().includes('checkAnswer');
+            if (!isCheckAnswerButton) {
+                button.addEventListener('click', () => {
+                    this.playSound('click');
+                });
+            }
         });
     }
 }
@@ -373,15 +412,8 @@ function loadEditorQuestion() {
         const previewImg = document.getElementById('preview-image');
         
         if (imgData) {
-            // 检查是否是URL（以http://或https://开头）
-            let imageSrc = '';
-            if (imgData.startsWith('http://') || imgData.startsWith('https://')) {
-                // 是完整URL，直接使用
-                imageSrc = imgData;
-            } else if (imgData.includes('\\') || imgData.includes('/')) {
-                // 是相对路径，直接使用
-                imageSrc = imgData.replace(/\\/g, '/');
-            }
+            // 使用公共函数处理图片URL
+            const imageSrc = getImageSrc(imgData);
             
             // 清除之前的事件监听器
             previewImg.onload = null;
@@ -417,7 +449,8 @@ function loadEditorQuestion() {
 
 // 保存编辑题
 function saveEditorQuestion() {
-    if (editIndex >= 0 && editIndex < editQuestions.length) {
+    // 添加防御性检查，确保editQuestions数组和索引有效
+    if (editQuestions && editQuestions.length > 0 && editIndex >= 0 && editIndex < editQuestions.length) {
         editQuestions[editIndex] = {
             image: editQuestions[editIndex].image || '',
             question: document.getElementById('edit-question').value.trim(),
@@ -530,9 +563,15 @@ document.getElementById('file-input').addEventListener('change', async (e) => {
             previewImg.src = compressedImage.url;
             
             // 保存压缩后的图片数据
+            // 先释放之前可能存在的blob URL
+            if (editQuestions[editIndex].image && editQuestions[editIndex].image.startsWith('blob:')) {
+                releaseBlobUrl(editQuestions[editIndex].image);
+            }
             editQuestions[editIndex].image = compressedImage.url;
             editQuestions[editIndex].imageWidth = compressedImage.width;
             editQuestions[editIndex].imageHeight = compressedImage.height;
+            // 将新生成的blob URL添加到跟踪列表
+            blobUrls.add(compressedImage.url);
         } catch (error) {
             console.error('图片处理失败:', error);
             alert('图片上传失败');
@@ -565,6 +604,10 @@ function editorAdd() {
 }
 
 function editorClear() {
+    // 释放当前题目的blob URL
+    if (editQuestions[editIndex].image && editQuestions[editIndex].image.startsWith('blob:')) {
+        releaseBlobUrl(editQuestions[editIndex].image);
+    }
     editQuestions[editIndex] = {'image': '', 'question': '', 'answer': '', 'hint': ''};
     loadEditorQuestion();
 }
@@ -647,14 +690,7 @@ async function preloadImages(questions) {
         const imagesToLoad = [];
         questions.forEach(question => {
             if (question.image) {
-                let imageSrc = '';
-                if (question.image.startsWith('http://') || question.image.startsWith('https://')) {
-                    // 是完整URL，直接使用
-                    imageSrc = question.image;
-                } else if (question.image.includes('\\') || question.image.includes('/')) {
-                    // 是相对路径，直接使用
-                    imageSrc = question.image.replace(/\\/g, '/');
-                }
+                const imageSrc = getImageSrc(question.image);
                 if (imageSrc) {
                     imagesToLoad.push(imageSrc);
                 }
@@ -691,11 +727,11 @@ async function preloadImages(questions) {
                 }
             }
             
-            // 加载完成后延迟0.5秒隐藏加载框，让用户感知到加载完成
+            // 加载完成后延迟1秒隐藏加载框，让用户有足够时间感知到加载完成
             setTimeout(() => {
                 loadingOverlay.style.display = 'none';
                 resolve();
-            }, 500);
+            }, 1000);
         };
         
         loadAllImages();
@@ -740,7 +776,7 @@ class NetworkManager {
         window.addEventListener('offline', () => {
             this.isOnline = false;
             console.log('网络已断开');
-            alert('网络连接已断开，请检查网络设置');
+            // 可以在这里添加更友好的网络断开提示，例如在页面上显示一个提示条
         });
 
         // 监听网络类型变化
@@ -783,7 +819,7 @@ class NetworkManager {
     }
 
     // 检查是否在线
-    isOnline() {
+    checkOnline() {
         return this.isOnline;
     }
 
@@ -816,6 +852,20 @@ class ImageLazyLoader {
         this.loadedImages = new Set();
         this.imageCache = new Map();
         this.networkManager = networkManager;
+        this.maxCacheSize = 50; // 设置最大缓存容量
+        this.cacheUsage = 0;
+    }
+    
+    // 清理图片缓存，移除最旧的缓存项
+    cleanupCache() {
+        if (this.imageCache.size > this.maxCacheSize) {
+            // 获取最旧的缓存项（Map按插入顺序迭代）
+            const oldestKey = this.imageCache.keys().next().value;
+            this.imageCache.delete(oldestKey);
+            this.loadedImages.delete(oldestKey);
+            this.cacheUsage = this.imageCache.size;
+            console.log(`图片缓存已清理，当前缓存大小: ${this.cacheUsage}/${this.maxCacheSize}`);
+        }
     }
 
     // 加载图片并处理失败重试
@@ -837,7 +887,7 @@ class ImageLazyLoader {
                 }
 
                 // 检查网络状态
-                if (!this.networkManager.isOnline) {
+                if (!this.networkManager.checkOnline()) {
                     reject(new Error('网络连接已断开'));
                     return;
                 }
@@ -847,7 +897,12 @@ class ImageLazyLoader {
                 img.onload = () => {
                     clearTimeout(timeoutId);
                     this.loadedImages.add(imageSrc);
+                    
+                    // 在添加新缓存前清理超出容量的旧缓存
+                    this.cleanupCache();
+                    
                     this.imageCache.set(imageSrc, img);
+                    this.cacheUsage = this.imageCache.size;
                     resolve(img);
                 };
                 
@@ -900,10 +955,20 @@ let imageLoader;
 function showGamePage() {
     showPage('game-page');
     
+    // 添加防御性检查，确保游戏数据有效
+    if (!gameQuestions || gameQuestions.length === 0) {
+        console.error('游戏题目列表为空');
+        document.getElementById('game-question').textContent = '游戏数据错误，请返回首页';
+        return;
+    }
+    
+    // 确保gameIndex在有效范围内
+    gameIndex = Math.max(0, Math.min(gameIndex, gameQuestions.length - 1));
+    
     const currentQ = gameQuestions[gameIndex];
     
     // 更新游戏信息
-    document.getElementById('game-author').textContent = `作者：${gameAuthor}`;
+    document.getElementById('game-author').textContent = `作者：${gameAuthor || '未知'}`;
     document.getElementById('game-progress').textContent = `第 ${gameIndex + 1} / ${gameQuestions.length} 题`;
     
     // 设置问题和图片
@@ -914,18 +979,8 @@ function showGamePage() {
     
     const gameImage = document.getElementById('game-image');
     if (currentQ.image) {
-        // 检查是否是URL（以http://或https://开头）
-        let imageSrc = '';
-        if (currentQ.image.startsWith('http://') || currentQ.image.startsWith('https://')) {
-            // 是完整URL，直接使用
-            imageSrc = currentQ.image;
-        } else if (currentQ.image.includes('\\') || currentQ.image.includes('/')) {
-            // 是相对路径，直接使用
-            imageSrc = currentQ.image.replace(/\\/g, '/');
-        }
-        
-        // 先将图片隐藏
-        gameImage.style.display = 'none';
+        // 使用公共函数处理图片URL
+        const imageSrc = getImageSrc(currentQ.image);
         
         // 清除之前的事件监听器
         gameImage.onload = null;
@@ -968,7 +1023,7 @@ function checkAnswer() {
     const correctAnswer = gameQuestions[gameIndex].answer;
     attemptCount++;
     
-    if (userAnswer === correctAnswer) {
+    if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
         correctCount++;
         answeredCurrent = true;
         soundManager.playSound('win');
@@ -1023,8 +1078,7 @@ function showGameComplete() {
 // 全局函数 - 切换背景音乐
 function toggleBgm() {
     const isPlaying = soundManager.toggleBgm();
-    const btn = document.getElementById('bgm-toggle');
-    btn.textContent = isPlaying ? '关闭音乐' : '开启音乐';
+    // 该函数用于切换背景音乐，按钮图标由SoundManager内部更新
 }
 
 // 新增：加载初始题库（从banks文件夹导入）
@@ -1077,6 +1131,48 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // 响应式缩放
-window.addEventListener('resize', () => {
-    // 可以在这里添加响应式调整逻辑
-});
+function handleResize() {
+    // 获取窗口尺寸
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    // 针对不同屏幕尺寸进行简单的响应式调整
+    const appContainer = document.getElementById('app');
+    if (appContainer) {
+        // 确保app容器适应屏幕尺寸
+        if (windowWidth < 768) {
+            // 移动设备，调整容器大小和内边距
+            appContainer.style.padding = '10px';
+        } else {
+            // 桌面设备，使用默认样式
+            appContainer.style.padding = '';
+        }
+    }
+    
+    // 调整游戏图片容器的大小
+    const gameImageContainer = document.getElementById('game-image-container');
+    if (gameImageContainer) {
+        const maxWidth = windowWidth * 0.45;
+        const maxHeight = windowHeight * 0.6;
+        gameImageContainer.style.maxWidth = `${maxWidth}px`;
+        gameImageContainer.style.maxHeight = `${maxHeight}px`;
+    }
+    
+    // 调整游戏容器的布局
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) {
+        if (windowWidth < 1024) {
+            // 小屏幕设备，使用垂直布局
+            gameContainer.style.flexDirection = 'column';
+        } else {
+            // 大屏幕设备，使用水平布局
+            gameContainer.style.flexDirection = 'row';
+        }
+    }
+}
+
+// 响应式缩放事件监听
+window.addEventListener('resize', handleResize);
+
+// 页面加载时初始化响应式布局
+window.addEventListener('load', handleResize);
