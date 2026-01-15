@@ -754,6 +754,11 @@ async function startGame(bank) {
     gaveUpCount = 0;
     answeredCurrent = false;
     
+    // 如果BGM是关闭的，自动开启
+    if (!soundManager.bgmPlaying) {
+        soundManager.playBgm();
+    }
+    
     // 预加载图片
     await preloadImages(gameQuestions);
     
