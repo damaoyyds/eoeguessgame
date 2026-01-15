@@ -688,21 +688,26 @@ h1.outlined-text {
 @media (max-width: 768px) {
     .answer-buttons {
         flex-direction: row;
-        gap: 6px;
+        gap: 12px;
         justify-content: center;
         flex-wrap: nowrap;
         padding: 0 5px;
+        width: 100%;
     }
     
     .answer-buttons .rounded-button {
         width: auto;
+        min-width: auto;
         max-width: none;
-        padding: 6px 10px;
-        font-size: 12px;
+        padding: 12px 20px;
+        font-size: 18px;
         margin: 0;
-        flex: 1;
-        border-radius: 20px;
+        flex: 0;
+        flex-basis: auto;
+        white-space: nowrap;
+        border-radius: 25px;
         min-height: auto;
+        box-sizing: border-box;
     }
 }
 
