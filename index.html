@@ -140,6 +140,9 @@
                 <!-- 右侧答题区域 -->
                 <div class="game-right">
                     <div class="answer-section">
+                        <!-- 错误答案显示区域 -->
+                        <div id="wrong-answers" class="wrong-answers"></div>
+                        
                         <div class="answer-inputs">
                             <input type="text" class="answer-input" maxlength="1" placeholder="">
                             <input type="text" class="answer-input" maxlength="1" placeholder="">
@@ -148,7 +151,8 @@
                         </div>
                         <div class="answer-buttons">
                             <button class="rounded-button" onclick="checkAnswer()">确定</button>
-                            <button class="hint-btn" onclick="showHint()">💡</button>
+                            <button class="rounded-button" onclick="showHint()">提示</button>
+                            <button class="rounded-button" onclick="giveUp()">放弃</button>
                         </div>
                     </div>
                     <div id="result-text" class="outlined-text"></div>

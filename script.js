@@ -1054,6 +1054,13 @@ function showGamePage() {
     const answerButtons = answerSection.querySelector('.answer-buttons');
     answerSection.insertBefore(newInputsContainer, answerButtons);
     
+    // 初始化或清空错误答案数组
+    window.wrongAnswers = [];
+    
+    // 清空错误答案显示
+    const wrongAnswersContainer = document.getElementById('wrong-answers');
+    wrongAnswersContainer.innerHTML = '';
+    
     document.getElementById('result-text').textContent = '';
     document.getElementById('next-btn-container').style.display = 'none';
     
@@ -1100,7 +1107,7 @@ function showGamePage() {
 function checkAnswer() {
     if (answeredCurrent) return;
     
-    // 获取四个输入框的答案
+    // 获取输入框的答案
     const answerInputs = document.querySelectorAll('.answer-input');
     let userAnswer = '';
     answerInputs.forEach(input => {
@@ -1119,7 +1126,49 @@ function checkAnswer() {
     } else {
         soundManager.playSound('lose');
         document.getElementById('result-text').textContent = '答错啦~';
+        
+        // 添加错误答案到数组
+        window.wrongAnswers.push(userAnswer);
+        
+        // 限制最多显示3个错误答案
+        if (window.wrongAnswers.length > 3) {
+            window.wrongAnswers.shift(); // 移除最早的错误答案
+        }
+        
+        // 更新错误答案显示
+        updateWrongAnswersDisplay();
     }
+}
+
+// 更新错误答案显示
+function updateWrongAnswersDisplay() {
+    const wrongAnswersContainer = document.getElementById('wrong-answers');
+    wrongAnswersContainer.innerHTML = '';
+    
+    // 获取当前题目的正确答案
+    const correctAnswer = gameQuestions[gameIndex].answer;
+    
+    // 遍历错误答案数组，创建显示元素
+    window.wrongAnswers.forEach(answer => {
+        const wrongAnswerItem = document.createElement('div');
+        wrongAnswerItem.className = 'wrong-answer-item';
+        
+        // 将错误答案拆分为单个字符，每个字符放在一个char-box中
+        for (let i = 0; i < answer.length; i++) {
+            const charBox = document.createElement('div');
+            charBox.className = 'char-box';
+            charBox.textContent = answer[i];
+            
+            // 检查当前字符是否与正确答案对应位置的字符匹配
+            if (i < correctAnswer.length && answer[i].toLowerCase() === correctAnswer[i].toLowerCase()) {
+                charBox.classList.add('char-correct');
+            }
+            
+            wrongAnswerItem.appendChild(charBox);
+        }
+        
+        wrongAnswersContainer.appendChild(wrongAnswerItem);
+    });
 }
 
 // 显示帮助
