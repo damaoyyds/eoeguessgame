@@ -1,12 +1,13 @@
 # EOE 谐音梗挑战
 
-一个基于 Web 技术开发的谐音梗猜词游戏，支持多期题库、音效系统和响应式设计。
+一个基于 Web 技术开发的EOE谐音梗猜词游戏。
 
 - **网页版作者**：[@柚想起她](https://space.bilibili.com/3690980530195127)
 - **游戏原作者**：[@Oneiric_Dairy](https://space.bilibili.com/142025)
 - **特别感谢，关注EOE谢谢喵**：
   - [@柚恩不加糖](https://space.bilibili.com/1795147802)
   - [@露早gogo](https://space.bilibili.com/1669777785)
+- **技术支持**：感谢Trae，腾讯元宝，豆包对本项目提供的技术支持（AI实在太好用了）
 - 感谢玩家们的支持和反馈
 
 ## 🎯 游戏简介
@@ -144,22 +145,7 @@ EOE 谐音梗挑战是一款有趣的益智游戏，玩家需要根据图片和�
 
 ## 🤝 贡献
 
-欢迎提交 Issue 和 Pull Request 来改进这个项目！
 
-## 📄 许可证
-
-MIT License
-
-- **网页版作者**：[@柚想起她](https://space.bilibili.com/3690980530195127)
-- **游戏原作者**：[@Oneiric_Dairy](https://space.bilibili.com/142025)
-- **特别感谢**：
-  - [@柚恩不加糖](https://space.bilibili.com/1795147802)
-  - [@露早gogo](https://space.bilibili.com/1669777785)
-- 感谢所有参与项目开发的贡献者
-- 感谢 EOE 团队提供的灵感
-- 感谢玩家们的支持和反馈
-
----
 
 **享受游戏，挑战你的谐音梗能力！** 🎊
 
