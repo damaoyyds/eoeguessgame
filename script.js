@@ -87,10 +87,7 @@ function closeSettingsModal() {
     document.getElementById('settings-modal').style.display = 'none';
 }
 
-function showManagePage() {
-    showPage('manage-page');
-    refreshBankList();
-}
+
 
 function showSelectBankPage() {
     showPage('select-bank-page');
@@ -367,22 +364,7 @@ class QuestionBank {
 }
 
 // 刷新题库列表
-function refreshBankList() {
-    const bankList = document.getElementById('bank-list');
-    bankList.innerHTML = '';
-    
-    const banks = QuestionBank.getAllBanks();
-    
-    if (banks.length === 0) {
-        bankList.innerHTML = '<div class="outlined-text" style="margin: 50px;text-align: center;">暂无题库</div>';
-        return;
-    }
-    
-    banks.forEach(bank => {
-        const bankItem = createBankItem(bank, true);
-        bankList.appendChild(bankItem);
-    });
-}
+
 
 // 刷新选择题库列表
 function refreshSelectBankList() {
@@ -940,7 +922,7 @@ document.getElementById('bank-import-input').addEventListener('change', (e) => {
             const result = QuestionBank.importBank(event.target.result);
             if (result.success) {
                 alert('导入成功！');
-                refreshBankList();
+                refreshSelectBankList();
             } else {
                 alert(result.message);
             }
@@ -955,7 +937,7 @@ document.getElementById('bank-import-input').addEventListener('change', (e) => {
 function deleteBank(bank) {
     if (confirm(`确定删除题库 '${bank.name}' 吗？`)) {
         QuestionBank.deleteBank(bank.id);
-        refreshBankList();
+        refreshSelectBankList();
     }
 }
 
