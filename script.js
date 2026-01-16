@@ -495,8 +495,7 @@ function loadEditorQuestion() {
                 console.error('预览图片加载失败:', imageSrc);
                 previewImg.style.display = 'none';
                 imgButton.querySelector('span').style.display = 'block';
-                // 可以在这里添加加载失败的提示
-                alert('图片加载失败，请检查网络连接或图片URL');
+                // 移除错误提示，避免干扰用户体验
             };
             
             // 设置图片源
