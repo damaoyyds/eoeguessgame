@@ -299,6 +299,13 @@ h1.outlined-text {
     z-index: 1;
 }
 
+/* 手机版标题调整，避免被按钮挡住 */
+@media (max-width: 768px) {
+    .title {
+        margin-top: 60px;
+    }
+}
+
 .button-row {
     display: flex;
     justify-content: center;

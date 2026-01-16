@@ -55,6 +55,14 @@ function showPage(pageId) {
     });
     document.getElementById(pageId).classList.add('active');
     currentPage = pageId;
+    
+    // 记录页面历史，但避免重复记录相同页面
+    if (pageHistory.length === 0 || pageHistory[pageHistory.length - 1] !== pageId) {
+        pageHistory.push(pageId);
+        // 使用history.pushState更新浏览器历史记录
+        // 这样可以确保浏览器的历史记录与我们的pageHistory数组同步
+        history.pushState({ page: pageId }, '', '');
+    }
 }
 
 function showMainPage() {
@@ -1216,6 +1224,53 @@ class ImageLazyLoader {
     }
 }
 
+// 页面历史记录管理
+let pageHistory = [];
+const MAIN_PAGE = 'main-page';
+
+// 处理返回键逻辑
+function handleBackButton() {
+    // 如果当前页面不是主页面，返回上一个页面
+    if (currentPage !== MAIN_PAGE) {
+        // 移除当前页面
+        pageHistory.pop();
+        // 导航到上一个页面，如果没有上一个页面则导航到主页面
+        const prevPage = pageHistory.length > 0 ? pageHistory[pageHistory.length - 1] : MAIN_PAGE;
+        
+        // 显示上一个页面
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        document.getElementById(prevPage).classList.add('active');
+        currentPage = prevPage;
+        
+        // 确保页面历史记录正确
+        if (pageHistory.length === 0) {
+            pageHistory.push(MAIN_PAGE);
+        }
+        
+        return true; // 表示已处理返回键
+    }
+    return false; // 表示未处理返回键，使用默认行为
+}
+
+// 初始化返回键监听
+function initBackButtonListener() {
+    // 监听浏览器历史记录变化事件（包括返回键）
+    window.addEventListener('popstate', function(e) {
+        // 阻止默认行为
+        e.preventDefault();
+        // 处理返回键逻辑
+        handleBackButton();
+    });
+    
+    // 初始化页面历史记录
+    pageHistory = [MAIN_PAGE];
+    
+    // 初始化浏览器历史记录
+    history.replaceState({ page: MAIN_PAGE }, '', '');
+}
+
 // 初始化网络管理器和图片懒加载管理器
 let networkManager;
 let imageLoader;
@@ -1590,6 +1645,9 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // 初始化图片懒加载管理器
     imageLoader = new ImageLazyLoader(networkManager);
+    
+    // 初始化返回键监听
+    initBackButtonListener();
     
     // 加载初始题库（关键新增）
     loadInitialBanks().then(() => {
