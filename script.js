@@ -1627,10 +1627,11 @@ function toggleBgm() {
 
 // 新增：加载初始题库（从banks文件夹导入）
 async function loadInitialBanks() {
-    // 定义初始题库文件路径
+    // 定义初始题库文件路径 - 包括所有banks文件夹中的JSON文件
     const initialBankFiles = [
         'banks/第一期_updated.json',
-        'banks/第二期_updated.json'
+        'banks/第二期_updated.json',
+        'banks/拼好团DLC.json'
     ];
 
     // 遍历并导入每个初始题库
