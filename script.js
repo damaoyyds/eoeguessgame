@@ -875,8 +875,29 @@ function exportBank(bank) {
                 } catch (e) {
                     console.warn('Base64图片处理失败，保留原始路径:', e);
                 }
+            } else {
+                // 处理相对路径图片
+                const promise = new Promise((resolve) => {
+                    fetch(q.image)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            // 生成唯一的图片文件名，保留原始扩展名
+                            const extension = q.image.split('.').pop() || 'jpg';
+                            const imageName = `question_${index + 1}_${Date.now()}.${extension}`;
+                            // 将图片添加到压缩包
+                            imagesFolder.file(imageName, blob);
+                            // 更新题目中的图片路径
+                            q.image = `images/${imageName}`;
+                            resolve();
+                        })
+                        .catch(() => {
+                            // 处理失败时保留原始路径
+                            console.warn('相对路径图片处理失败，保留原始路径:', q.image);
+                            resolve();
+                        });
+                });
+                imagePromises.push(promise);
             }
-            // 如果是相对路径或空值，不处理
         }
     });
     
