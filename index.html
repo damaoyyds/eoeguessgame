@@ -140,6 +140,7 @@
             
             <!-- 右上角图标 -->
             <div class="top-icons">
+                <button class="icon-btn" onclick="showAnnouncement()">i</button>
                 <button class="icon-btn" onclick="showHelp()">?</button>
                 <button class="icon-btn" onclick="showSettingsPage()">⚙️</button>
             </div>
@@ -265,6 +266,30 @@
                         <p>5. 点击提示按钮可以获得提示</p>
                     </div>
                     <div class="outlined-text" style="text-align: center; font-size: 20px; color: #FF6B6B;">希望大家玩的开心！</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 公告弹窗 -->
+    <div id="announcement-modal" class="modal" style="display: none;">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="outlined-text">公告</h1>
+                <button class="close-btn" onclick="closeAnnouncementModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-content">
+                    <div class="outlined-text" style="text-align: left; line-height: 1.8; font-size: 18px; margin-bottom: 20px;">
+                        <p style="text-indent: 2em;">EOE谐音梗挑战网页版已经正式上线啦，欢迎大家前来游玩，有任何意见建议或者bug的话，可以和网页版作者B站私信反馈。想投稿题目的话可以在首页点击我要出题，编辑完成后点击导出，将题目发到提示的邮箱里，祝大家玩的开心。</p>
+                        <br>
+                        <p>网页版作者：@柚想起她</p>
+                        <p>游戏原作者：@Oneiric_Dairy</p>
+                        <br>
+                        <p>喜欢的话可以给我们b站点个关注，感谢大家!</p>
+                        <p>对了，不要忘了看@柚恩不加糖，@露早gogo的直播呦❤</p>
+                    </div>
                 </div>
             </div>
         </div>

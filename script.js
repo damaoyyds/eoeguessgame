@@ -1410,6 +1410,15 @@ function updateWrongAnswersDisplay() {
     });
 }
 
+// 显示公告
+function showAnnouncement() {
+    document.getElementById('announcement-modal').style.display = 'flex';
+}
+
+function closeAnnouncementModal() {
+    document.getElementById('announcement-modal').style.display = 'none';
+}
+
 // 显示帮助
 function showHelp() {
     document.getElementById('help-modal').style.display = 'flex';
