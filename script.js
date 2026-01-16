@@ -441,7 +441,14 @@ function createBankItem(bank, isManagePage) {
         selectBtn.textContent = '开始';
         selectBtn.onclick = () => startGame(bank);
         
+        // 添加导出按钮
+        const exportBtn = document.createElement('button');
+        exportBtn.className = 'rounded-button';
+        exportBtn.textContent = '导出';
+        exportBtn.onclick = () => exportBank(bank);
+        
         btnDiv.appendChild(selectBtn);
+        btnDiv.appendChild(exportBtn);
     }
     
     itemDiv.appendChild(infoDiv);
@@ -696,6 +703,35 @@ function editorClear() {
     }
 }
 
+// 将blob URL转换为base64格式的函数
+function blobToBase64(blobUrl) {
+    return new Promise((resolve, reject) => {
+        fetch(blobUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    resolve(reader.result);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            })
+            .catch(reject);
+    });
+}
+
+// 保存编辑的题目
+function saveEditorQuestion() {
+    if (editQuestions && editQuestions.length > 0 && editIndex >= 0 && editIndex < editQuestions.length) {
+        editQuestions[editIndex] = {
+            image: editQuestions[editIndex].image || '',
+            question: document.getElementById('edit-question').value.trim(),
+            answer: document.getElementById('edit-answer').value.trim(),
+            hint: document.getElementById('edit-hint').value.trim()
+        };
+    }
+}
+
 function editorSave() {
     saveEditorQuestion();
     const validQuestions = editQuestions.filter(q => q.answer);
@@ -708,13 +744,35 @@ function editorSave() {
     const bankName = document.getElementById('edit-bank-name').value.trim() || '新题库';
     const author = document.getElementById('edit-author').value.trim() || '未知';
     
-    if (editingBank) {
-        QuestionBank.updateBank(editingBank.id, bankName, author, validQuestions);
-    } else {
-        QuestionBank.saveBank(bankName, author, validQuestions);
-    }
+    // 处理图片数据：将blob URL转换为base64格式以便持久化存储
+    const processedQuestions = validQuestions.map(async (q) => {
+        const processedQ = { ...q };
+        if (q.image && q.image.startsWith('blob:')) {
+            try {
+                processedQ.image = await blobToBase64(q.image);
+            } catch (e) {
+                console.error('转换blob URL为base64失败:', e);
+                // 转换失败时保留原始blob URL
+            }
+        }
+        return processedQ;
+    });
     
-    alert('保存成功！');
+    // 等待所有图片转换完成
+    Promise.all(processedQuestions)
+        .then((processedQuestionsArray) => {
+            if (editingBank) {
+                QuestionBank.updateBank(editingBank.id, bankName, author, processedQuestionsArray);
+            } else {
+                QuestionBank.saveBank(bankName, author, processedQuestionsArray);
+            }
+            
+            alert('保存成功！');
+        })
+        .catch(err => {
+            console.error('处理图片数据失败:', err);
+            alert('保存失败！请重试。');
+        });
 }
 
 // 导出题库（支持编辑页面和管理页面调用）
@@ -722,7 +780,7 @@ function exportBank(bank) {
     let bankData, questions, bankName;
     
     if (bank) {
-        // 管理页面调用：使用传入的bank对象
+        // 管理页面或选择页面调用：使用传入的bank对象
         bankName = bank.name;
         questions = bank.questions;
         bankData = {
@@ -768,49 +826,68 @@ function exportBank(bank) {
     const imagePromises = [];
     
     exportQuestions.forEach((q, index) => {
-        if (q.image && q.image.startsWith('blob:')) {
-            // 处理blob URL图片（仅编辑页面会有）
-            const promise = new Promise((resolve) => {
-                fetch(q.image)
-                    .then(response => response.blob())
-                    .then(blob => {
-                        // 生成唯一的图片文件名
-                        const imageName = `question_${index + 1}_${Date.now()}.webp`;
-                        // 将图片添加到压缩包
-                        imagesFolder.file(imageName, blob);
-                        // 更新题目中的图片路径
-                        q.image = `images/${imageName}`;
-                        resolve();
-                    })
-                    .catch(() => {
-                        // 处理失败时保留原始路径
-                        resolve();
+        if (q.image) {
+            if (q.image.startsWith('blob:')) {
+                // 处理blob URL图片
+                // 注意：从localStorage加载的blob URL可能已失效
+                const promise = new Promise((resolve) => {
+                    fetch(q.image)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            // 生成唯一的图片文件名
+                            const imageName = `question_${index + 1}_${Date.now()}.webp`;
+                            // 将图片添加到压缩包
+                            imagesFolder.file(imageName, blob);
+                            // 更新题目中的图片路径
+                            q.image = `images/${imageName}`;
+                            resolve();
+                        })
+                        .catch(() => {
+                            // 处理失败时，尝试检查是否有base64数据或其他格式
+                            console.warn('Blob URL图片处理失败，保留原始路径:', q.image);
+                            // 保留原始路径
+                            resolve();
+                        });
+                });
+                imagePromises.push(promise);
+            } else if (q.image.startsWith('http://') || q.image.startsWith('https://')) {
+                // 处理外部URL图片
+                const promise = new Promise((resolve) => {
+                    fetch(q.image)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            // 生成唯一的图片文件名
+                            const extension = q.image.split('.').pop().split('?')[0] || 'jpg';
+                            const imageName = `question_${index + 1}_${Date.now()}.${extension}`;
+                            // 将图片添加到压缩包
+                            imagesFolder.file(imageName, blob);
+                            // 更新题目中的图片路径
+                            q.image = `images/${imageName}`;
+                            resolve();
+                        })
+                        .catch(() => {
+                            // 处理失败时保留原始路径
+                            console.warn('外部URL图片处理失败，保留原始路径:', q.image);
+                            resolve();
+                        });
+                });
+                imagePromises.push(promise);
+            } else if (q.image.includes(',')) {
+                // 处理base64格式图片
+                try {
+                    const base64Data = q.image.split(',')[1];
+                    const blob = new Blob([Uint8Array.from(atob(base64Data), c => c.charCodeAt(0))], {
+                        type: 'image/webp'
                     });
-            });
-            imagePromises.push(promise);
-        } else if (q.image && (q.image.startsWith('http://') || q.image.startsWith('https://'))) {
-            // 处理外部URL图片
-            const promise = new Promise((resolve) => {
-                fetch(q.image)
-                    .then(response => response.blob())
-                    .then(blob => {
-                        // 生成唯一的图片文件名
-                        const extension = q.image.split('.').pop().split('?')[0] || 'jpg';
-                        const imageName = `question_${index + 1}_${Date.now()}.${extension}`;
-                        // 将图片添加到压缩包
-                        imagesFolder.file(imageName, blob);
-                        // 更新题目中的图片路径
-                        q.image = `images/${imageName}`;
-                        resolve();
-                    })
-                    .catch(() => {
-                        // 处理失败时保留原始路径
-                        resolve();
-                    });
-            });
-            imagePromises.push(promise);
+                    const imageName = `question_${index + 1}_${Date.now()}.webp`;
+                    imagesFolder.file(imageName, blob);
+                    q.image = `images/${imageName}`;
+                } catch (e) {
+                    console.warn('Base64图片处理失败，保留原始路径:', e);
+                }
+            }
+            // 如果是相对路径或空值，不处理
         }
-        // 如果是相对路径或空值，不处理
     });
     
     // 等待所有图片处理完成
