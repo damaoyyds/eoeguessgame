@@ -1179,7 +1179,8 @@ function showGamePage() {
     const currentQ = gameQuestions[gameIndex];
     
     // 更新游戏信息
-    document.getElementById('game-id').textContent = `ID ${gameIndex + 1}`;
+    const questionId = currentQ.id || (gameIndex + 1); // 优先使用json中的id，若不存在则使用索引+1作为备选
+    document.getElementById('game-id').textContent = `ID ${questionId}`;
     document.getElementById('game-author').textContent = `作者: ${gameAuthor || '未知'}`;
     
     // 设置图片和文本
