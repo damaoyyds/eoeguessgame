@@ -155,10 +155,10 @@ class SoundManager {
     loadSounds() {
         // 音效文件路径
         const soundFiles = {
-            'win': 'win.wav',
-            'lose': 'lose.wav',
-            'clear': 'clear.wav',
-            'click': 'click.wav'
+            'win': 'sounds/win.wav',
+            'lose': 'sounds/lose.wav',
+            'clear': 'sounds/clear.wav',
+            'click': 'sounds/click.wav'
         };
 
         // 加载音效
@@ -169,7 +169,7 @@ class SoundManager {
         }
 
         // 加载背景音乐
-        this.bgm = new Audio('bgm.mp3');
+        this.bgm = new Audio('sounds/bgm.mp3');
         this.bgm.volume = this.bgmVolume;
         this.bgm.loop = true;
     }
