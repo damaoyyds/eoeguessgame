@@ -639,11 +639,25 @@ h1.outlined-text {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* 电脑版图片容器优化 */
+@media (min-width: 769px) {
+    .image-box {
+        min-height: 550px;
+    }
+}
+
 .image-box img {
     max-width: 95%;
     max-height: 280px;
     object-fit: contain;
     margin-bottom: 15px;
+}
+
+/* 电脑版竖屏图片优化 */
+@media (min-width: 769px) {
+    .image-box img {
+        max-height: 500px;
+    }
 }
 
 /* 调整顶部信息在游戏左侧的样式 */

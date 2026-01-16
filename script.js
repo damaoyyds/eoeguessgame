@@ -509,18 +509,7 @@ function loadEditorQuestion() {
     document.getElementById('question-info').textContent = `第 ${editIndex + 1} / ${total} 题 (有效: ${valid})`;
 }
 
-// 保存编辑题
-function saveEditorQuestion() {
-    // 添加防御性检查，确保editQuestions数组和索引有效
-    if (editQuestions && editQuestions.length > 0 && editIndex >= 0 && editIndex < editQuestions.length) {
-        editQuestions[editIndex] = {
-            image: editQuestions[editIndex].image || '',
-            question: document.getElementById('edit-question').value.trim(),
-            answer: document.getElementById('edit-answer').value.trim(),
-            hint: document.getElementById('edit-hint').value.trim()
-        };
-    }
-}
+
 
 // 图片压缩和格式转换函数
 async function compressImage(file, options = {}) {
@@ -1306,6 +1295,18 @@ function showGamePage() {
         document.getElementById('game-text').textContent = '游戏数据错误，请返回首页';
         return;
     }
+    
+    // 绑定回车键到回答按钮
+    function handleKeyDown(e) {
+        if (e.key === 'Enter' && currentPage === 'game-page' && !answeredCurrent) {
+            checkAnswer();
+        }
+    }
+    
+    // 先移除可能存在的事件监听器，避免重复绑定
+    window.removeEventListener('keydown', handleKeyDown);
+    // 添加新的事件监听器
+    window.addEventListener('keydown', handleKeyDown);
     
     // 确保gameIndex在有效范围内
     gameIndex = Math.max(0, Math.min(gameIndex, gameQuestions.length - 1));
