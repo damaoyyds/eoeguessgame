@@ -588,18 +588,23 @@ h1.outlined-text {
     gap: 30px;
     z-index: 1;
     margin-bottom: 100px;
+    align-items: flex-start;
 }
 
-.game-left, .game-right {
+.game-left {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
-/* 左侧上下两张图片 */
-.game-left {
+.game-right {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .image-pair {
@@ -893,6 +898,17 @@ h1.outlined-text {
         bottom: 100px;
         gap: 15px;
         width: 95%;
+        align-items: center;
+    }
+    
+    .game-left {
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .game-right {
+        align-items: center;
+        justify-content: center;
     }
     
     .edit-buttons {
