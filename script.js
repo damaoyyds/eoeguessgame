@@ -1446,6 +1446,11 @@ function giveUp() {
     const correctAnswer = gameQuestions[gameIndex].answer;
     document.getElementById('result-text').textContent = `正确答案是: ${correctAnswer}`;
     document.getElementById('next-btn-container').style.display = 'block';
+    
+    // 在手机端自动下拉到最下面
+    if (window.innerWidth <= 768) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
 }
 
 // 下一题
