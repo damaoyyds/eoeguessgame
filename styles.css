@@ -17,10 +17,16 @@ html, body {
     color: #333333;
     width: 100%;
     height: 100%;
+    /* 防止移动端弹性滚动导致的屏幕抽搐 */
+    overscroll-behavior: none;
+    /* 禁用body滚动，避免双重滚动容器冲突 */
+    overflow: hidden;
 }
 
-body {
-    overflow: auto;
+/* 优化滚动体验，防止滚动到边缘时的卡顿 */
+html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
 
 body,
@@ -36,7 +42,14 @@ button {
     width: 100%;
     height: 100%;
     position: relative;
-    overflow: auto;
+    /* 只保留#app作为唯一滚动容器 */
+    overflow-y: auto;
+    /* 优化滚动体验，启用硬件加速 */
+    -webkit-overflow-scrolling: touch;
+    /* 防止滚动到边缘时的弹性效果导致抽搐 */
+    overscroll-behavior-y: none;
+    /* 提升滚动性能 */
+    will-change: scroll-position;
 }
 
 /* 页面样式 */
@@ -80,7 +93,7 @@ button {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    /* 移除background-attachment: fixed，避免移动端滚动抽搐 */
     opacity: 0.5;
     /* 优化渲染性能，避免背景图抽搐 */
     will-change: transform;
@@ -531,7 +544,7 @@ h1.outlined-text {
     flex-direction: column;
     padding: 80px 20px 120px;
     z-index: 1;
-    overflow: auto;
+    /* 移除overflow: auto，避免与#app的滚动冲突 */
     box-sizing: border-box;
     max-width: 100%;
 }
@@ -872,6 +885,10 @@ h1.outlined-text {
     align-items: center;
     opacity: 0.8;
     animation: fadeIn 0.3s ease-in-out;
+    /* 添加换行属性，确保错误答案字符过多时能正确换行 */
+    flex-wrap: wrap;
+    /* 居中对齐换行后的字符 */
+    justify-content: center;
 }
 
 /* 错误答案中的单个字符样式 */
@@ -935,6 +952,12 @@ html {
     display: flex;
     gap: 15px;
     margin: 30px 0;
+    /* 添加换行属性，确保输入框超过5个时能正确换行 */
+    flex-wrap: wrap;
+    /* 居中对齐换行后的输入框 */
+    justify-content: center;
+    /* 限制最大宽度，避免过度拉伸 */
+    max-width: 100%;
 }
 
 
@@ -1065,6 +1088,37 @@ html {
         margin: 10px;
         min-width: 120px;
         min-height: 44px;
+    }
+    
+    /* 手机端输入框样式调整 */
+    .answer-inputs {
+        gap: 10px;
+        margin: 20px 0;
+        padding: 0 10px;
+    }
+    
+    .answer-input {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    
+    /* 手机端错误答案样式调整 */
+    .wrong-answers {
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .wrong-answer-item {
+        gap: 10px;
+        width: 100%;
+        padding: 0 10px;
+    }
+    
+    .wrong-answer-item .char-box {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
     }
     
     .rounded-button.small {

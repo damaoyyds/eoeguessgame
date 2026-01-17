@@ -1690,7 +1690,8 @@ async function loadInitialBanks() {
     const initialBankFiles = [
         'banks/第一期_updated.json',
         'banks/第二期_updated.json',
-        'banks/拼好团DLC.json'
+        'banks/拼好团DLC.json',
+        'banks/码头笑话DLC.json'
     ];
 
     // 遍历并导入每个初始题库
