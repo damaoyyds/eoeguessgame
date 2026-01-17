@@ -1527,6 +1527,20 @@ function checkAnswer() {
         soundManager.playSound('win');
         document.getElementById('result-text').textContent = '答对啦！太棒了！';
         document.getElementById('next-btn-container').style.display = 'block';
+        
+        // 在手机端自动下拉到最下面
+        if (window.innerWidth <= 768) {
+            setTimeout(() => {
+                // 尝试多种滚动方式确保兼容性
+                const appContainer = document.getElementById('app');
+                if (appContainer) {
+                    appContainer.scrollTo({ top: appContainer.scrollHeight, behavior: 'smooth' });
+                }
+                // 同时滚动window以确保效果
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                document.documentElement.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+            }, 100);
+        }
     } else {
         soundManager.playSound('lose');
         document.getElementById('result-text').textContent = '答错啦~';
@@ -1623,7 +1637,16 @@ function giveUp() {
     
     // 在手机端自动下拉到最下面
     if (window.innerWidth <= 768) {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        setTimeout(() => {
+            // 尝试多种滚动方式确保兼容性
+            const appContainer = document.getElementById('app');
+            if (appContainer) {
+                appContainer.scrollTo({ top: appContainer.scrollHeight, behavior: 'smooth' });
+            }
+            // 同时滚动window以确保效果
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            document.documentElement.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+        }, 100);
     }
 }
 
