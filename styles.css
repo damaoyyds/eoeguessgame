@@ -521,11 +521,7 @@ h1.outlined-text {
     z-index: 1;
 }
 
-/* 确保返回首页按钮和右上角图标在同一水平线上 */
-#edit-bank-page .home-btn,
-#edit-bank-page .top-icons {
-    top: 30px;
-}
+
 
 /* 编辑页面样式 */
 .form-section {
@@ -772,16 +768,7 @@ h1.outlined-text {
     justify-content: flex-start;
 }
 
-.image-pair {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-}
 
-.image-item {
-    width: 100%;
-}
 
 .image-box {
     background-color: #F5F5DC;
@@ -893,17 +880,7 @@ h1.outlined-text {
     font-weight: bold;
 }
 
-/* 淡入动画 - 基础版本 */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 0.8;
-        transform: translateY(0);
-    }
-}
+
 
 /* 淡入动画 - 完整版本（用于页面元素） */
 @keyframes fadeInFull {
@@ -917,65 +894,11 @@ h1.outlined-text {
     }
 }
 
-/* 滑入动画 - 从左侧 */
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
 
-/* 滑入动画 - 从右侧 */
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* 缩放动画 - 悬停效果 */
-@keyframes scaleIn {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(1.02);
-    }
-}
-
-/* 题库项进入动画 */
-.bank-item {
-    animation: fadeInFull 0.5s ease-out forwards;
-}
-
-/* 为不同题库项添加交错动画延迟 */
-.bank-item:nth-child(1) { animation-delay: 0.1s; }
-.bank-item:nth-child(2) { animation-delay: 0.2s; }
-.bank-item:nth-child(3) { animation-delay: 0.3s; }
-.bank-item:nth-child(4) { animation-delay: 0.4s; }
-.bank-item:nth-child(5) { animation-delay: 0.5s; }
-.bank-item:nth-child(6) { animation-delay: 0.6s; }
-.bank-item:nth-child(7) { animation-delay: 0.7s; }
-.bank-item:nth-child(8) { animation-delay: 0.8s; }
-.bank-item:nth-child(9) { animation-delay: 0.9s; }
-.bank-item:nth-child(10) { animation-delay: 1.0s; }
 
 /* 标题动画 */
 .title {
     animation: fadeInFull 0.6s ease-out forwards;
-}
-
-/* 按钮组动画 */
-.button-row {
-    animation: fadeInFull 0.7s ease-out forwards;
 }
 
 /* 题库列表容器动画 */
@@ -988,40 +911,7 @@ html {
     scroll-behavior: smooth;
 }
 
-/* 按钮点击波纹效果 */
-.rounded-button {
-    position: relative;
-    overflow: hidden;
-}
 
-.rounded-button::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 0;
-    border-radius: 100%;
-    transform: scale(1, 1) translate(-50%, -50%);
-    transform-origin: 50% 50%;
-}
-
-.rounded-button:active::after {
-    animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-    0% {
-        transform: scale(0, 0);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(100, 100);
-        opacity: 0;
-    }
-}
 
 .answer-inputs {
     display: flex;
@@ -1029,20 +919,7 @@ html {
     margin: 30px 0;
 }
 
-/* 手机端答案输入框换行处理 */
-@media (max-width: 768px) {
-    .answer-inputs {
-        flex-wrap: wrap;
-        justify-content: center;
-        max-width: 350px; /* 5个输入框的最大宽度：5*(60+15)px */
-    }
-    
-    .wrong-answer-item {
-        flex-wrap: wrap;
-        justify-content: center;
-        max-width: 350px; /* 5个字符框的最大宽度：5*(60+15)px */
-    }
-}
+
 
 .answer-input {
     width: 60px;
