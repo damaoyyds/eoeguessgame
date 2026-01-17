@@ -278,6 +278,29 @@ class SoundManager {
     }
 }
 
+// 已玩过题库管理
+function getPlayedBanks() {
+    const playedBanks = localStorage.getItem('eoe-guess-played-banks');
+    return playedBanks ? JSON.parse(playedBanks) : [];
+}
+
+function isBankPlayed(bankId) {
+    const playedBanks = getPlayedBanks();
+    return playedBanks.includes(bankId);
+}
+
+function markBankAsPlayed(bankId) {
+    const playedBanks = getPlayedBanks();
+    if (!playedBanks.includes(bankId)) {
+        playedBanks.push(bankId);
+        localStorage.setItem('eoe-guess-played-banks', JSON.stringify(playedBanks));
+    }
+}
+
+function clearPlayedBanks() {
+    localStorage.removeItem('eoe-guess-played-banks');
+}
+
 // 题库管理类
 class QuestionBank {
     static getBanks() {
@@ -348,7 +371,8 @@ class QuestionBank {
             const existingIndex = banks.findIndex(b => b.name === bankData.name);
             
             const bank = {
-                id: Date.now(),
+                // 优先使用JSON文件中指定的id，否则保留原有ID，再否则生成新ID
+                id: bankData.id || (existingIndex !== -1 ? banks[existingIndex].id : Date.now()),
                 name: bankData.name,
                 author: bankData.author || '未知',
                 questions: bankData.questions,
@@ -399,7 +423,13 @@ function createBankItem(bank, isManagePage) {
     
     const infoDiv = document.createElement('div');
     infoDiv.className = 'bank-item-info';
-    infoDiv.innerHTML = `<div class="outlined-text">${bank.name}    作者：${bank.author}    题目：${bank.count}道</div>`;
+    
+    // 检查题库是否已玩过
+    const isPlayed = isBankPlayed(bank.id);
+    // 创建已玩过标记
+    const playedMark = isPlayed ? '<span style="color: #4CAF50; margin-left: 8px; font-weight: bold;">✓ 已玩过</span>' : '';
+    
+    infoDiv.innerHTML = `<div class="outlined-text">${bank.name}${playedMark}    作者：${bank.author}    题目：${bank.count}道</div>`;
     
     const btnDiv = document.createElement('div');
     btnDiv.className = 'bank-item-buttons';
@@ -1611,6 +1641,11 @@ function nextQuestion() {
 function showGameComplete() {
     showPage('complete-page');
     soundManager.playSound('clear');
+    
+    // 标记当前题库为已玩过
+    if (gameBank && gameBank.id) {
+        markBankAsPlayed(gameBank.id);
+    }
     
     const total = gameQuestions.length;
     const accuracy = total > 0 ? (correctCount / total * 100).toFixed(1) : 0;
