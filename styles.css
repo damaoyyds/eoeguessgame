@@ -12,9 +12,15 @@
     box-sizing: border-box;
 }
 
-body {
+html, body {
     background-color: transparent;
     color: #333333;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: auto;
 }
 
 body,
@@ -27,9 +33,10 @@ button {
 
 /* 页面容器 */
 #app {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     position: relative;
+    overflow: auto;
 }
 
 /* 页面样式 */
@@ -514,11 +521,14 @@ h1.outlined-text {
 /* 通用页面内容容器 */
 .page-content {
     position: relative;
-    min-height: 100vh;
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     padding: 80px 20px 120px;
     z-index: 1;
+    overflow: auto;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 
@@ -580,6 +590,9 @@ h1.outlined-text {
     flex: 1;
     margin-bottom: 20px;
     min-height: 400px;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .edit-left, .edit-right {
