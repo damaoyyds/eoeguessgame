@@ -63,8 +63,12 @@ button {
     height: 100%;
     background-color: #FFF8DC;
     z-index: 0;
+    /* 优化渲染性能，避免背景图抽搐 */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
+/* 背景图使用伪元素实现，保持背景色不透明 */
 .background::before {
     content: '';
     position: absolute;
@@ -76,15 +80,16 @@ button {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     opacity: 0.5;
-    z-index: -1;
+    /* 优化渲染性能，避免背景图抽搐 */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 /* 响应式背景优化 */
 @media (max-width: 768px) {
     .background::before {
-        background-size: cover;
-        background-position: center;
         opacity: 0.3;
     }
 }
