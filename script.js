@@ -1207,8 +1207,50 @@ async function startGame(bank) {
         soundManager.playBgm();
     }
     
-    // 预加载图片
-    await preloadImages(gameQuestions);
+    // 预加载前5张图片
+    const imagesToPreload = [];
+    const preloadCount = Math.min(5, gameQuestions.length);
+    for (let i = 0; i < preloadCount; i++) {
+        const question = gameQuestions[i];
+        if (question.image) {
+            const imageSrc = getImageSrc(question.image);
+            if (imageSrc) {
+                imagesToPreload.push(imageSrc);
+            }
+        }
+    }
+    
+    // 显示加载进度条
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    
+    if (imagesToPreload.length > 0) {
+        loadingOverlay.style.display = 'flex';
+        progressBar.style.width = '0%';
+        progressText.textContent = '0%';
+        
+        let loadedCount = 0;
+        
+        // 并行加载图片
+        await Promise.all(imagesToPreload.map(imageSrc => {
+            return imageLoader.loadImageWithRetry(imageSrc)
+                .catch(error => {
+                    console.error('预加载图片失败:', error);
+                    // 预加载失败不影响游戏开始
+                    return null;
+                })
+                .finally(() => {
+                    loadedCount++;
+                    const progress = Math.floor((loadedCount / imagesToPreload.length) * 100);
+                    progressBar.style.width = `${progress}%`;
+                    progressText.textContent = `${progress}%`;
+                });
+        }));
+        
+        // 隐藏加载进度条
+        loadingOverlay.style.display = 'none';
+    }
     
     // 预加载完成后显示游戏页面
     showGamePage();
@@ -1576,30 +1618,72 @@ function showGamePage() {
         gameImage.onload = null;
         gameImage.onerror = null;
         
-        // 使用懒加载管理器加载图片
+        // 显示加载状态
+        gameImage.style.display = 'block';
+        gameImage.src = ''; // 清空当前图片
+        gameImage.classList.add('loading');
+        document.getElementById('result-text').textContent = '图片加载中...';
+        
+        // 使用懒加载管理器加载当前题目的图片
         imageLoader.loadImageWithRetry(imageSrc)
             .then(() => {
                 // 图片加载成功，设置到游戏图片元素
                 gameImage.onload = () => {
+                    gameImage.classList.remove('loading');
+                    document.getElementById('result-text').textContent = '';
                     gameImage.style.display = 'block';
                 };
                 
                 gameImage.onerror = () => {
                     console.error('游戏图片加载失败:', imageSrc);
+                    gameImage.classList.remove('loading');
                     gameImage.style.display = 'none';
                     document.getElementById('result-text').textContent = '图片加载失败，请检查网络连接或图片URL';
                 };
                 
                 gameImage.src = imageSrc;
+                
+                // 预加载下两题的图片（如果存在）
+                for (let i = 1; i <= 2; i++) {
+                    const nextIndex = gameIndex + i;
+                    if (nextIndex < gameQuestions.length) {
+                        const nextQ = gameQuestions[nextIndex];
+                        if (nextQ.image) {
+                            const nextImageSrc = getImageSrc(nextQ.image);
+                            imageLoader.loadImageWithRetry(nextImageSrc)
+                                .catch(error => {
+                                    console.error(`预加载第${nextIndex + 1}题图片失败:`, error);
+                                    // 预加载失败不影响当前游戏，只记录日志
+                                });
+                        }
+                    }
+                }
             })
             .catch(error => {
                 console.error('使用懒加载加载图片失败:', error);
+                gameImage.classList.remove('loading');
                 gameImage.style.display = 'none';
                 document.getElementById('result-text').textContent = '图片加载失败，请检查网络连接或图片URL';
             });
     } else {
         gameImage.src = '';
         gameImage.style.display = 'none';
+        
+        // 预加载下两题的图片（如果存在）
+        for (let i = 1; i <= 2; i++) {
+            const nextIndex = gameIndex + i;
+            if (nextIndex < gameQuestions.length) {
+                const nextQ = gameQuestions[nextIndex];
+                if (nextQ.image) {
+                    const nextImageSrc = getImageSrc(nextQ.image);
+                    imageLoader.loadImageWithRetry(nextImageSrc)
+                        .catch(error => {
+                            console.error(`预加载第${nextIndex + 1}题图片失败:`, error);
+                            // 预加载失败不影响当前游戏，只记录日志
+                        });
+                }
+            }
+        }
     }
     
     answeredCurrent = false;
