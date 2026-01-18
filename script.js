@@ -84,6 +84,9 @@ function showSettingsPage() {
         slider.value = currentSfxVolume;
     });
     
+    // 更新所有BGM选择下拉框
+    soundManager.updateBgmSelect();
+    
     // 确保BGM开关图标显示正确
     soundManager.updateBgmButton();
     
@@ -120,6 +123,7 @@ class SoundManager {
         this.sounds = {};
         this.bgm = null;
         this.bgmPlaying = false;
+        this.currentBgm = 'bgm.mp3'; // 默认BGM
         this.loadSounds();
         this.setupEventListeners();
         this.setupButtonClickSounds();
@@ -169,7 +173,7 @@ class SoundManager {
         }
 
         // 加载背景音乐
-        this.bgm = new Audio('sounds/bgm.mp3');
+        this.bgm = new Audio(`sounds/${this.currentBgm}`);
         this.bgm.volume = this.bgmVolume;
         this.bgm.loop = true;
     }
@@ -206,6 +210,44 @@ class SoundManager {
         if (this.bgm) {
             this.bgm.volume = volume;
         }
+    }
+
+    // 切换背景音乐
+    changeBgm(bgmName) {
+        if (this.currentBgm === bgmName) {
+            return; // 已经是当前BGM，不需要切换
+        }
+        
+        const wasPlaying = this.bgmPlaying;
+        
+        // 暂停当前BGM
+        if (this.bgm) {
+            this.bgm.pause();
+            this.bgm.currentTime = 0;
+        }
+        
+        // 更新当前BGM名称
+        this.currentBgm = bgmName;
+        
+        // 重新加载BGM
+        this.bgm = new Audio(`sounds/${this.currentBgm}`);
+        this.bgm.volume = this.bgmVolume;
+        this.bgm.loop = true;
+        
+        // 如果之前是播放状态，继续播放
+        if (wasPlaying) {
+            this.playBgm();
+        }
+        
+        // 同步所有BGM选择下拉框
+        this.updateBgmSelect();
+    }
+    
+    // 更新所有BGM选择下拉框
+    updateBgmSelect() {
+        document.querySelectorAll('[id^="bgm-select"]').forEach(select => {
+            select.value = this.currentBgm;
+        });
     }
 
     setSfxVolume(volume) {
@@ -259,6 +301,18 @@ class SoundManager {
                 });
             }
             slider.addEventListener('input', sfxVolumeHandler);
+        });
+        
+        // 为所有BGM选择下拉框添加事件监听（包括页面和弹窗）
+        const bgmSelects = document.querySelectorAll('[id^="bgm-select"]');
+        bgmSelects.forEach(select => {
+            // 先移除现有的事件监听器，防止重复绑定
+            select.removeEventListener('change', bgmSelectHandler);
+            function bgmSelectHandler(e) {
+                const bgmName = e.target.value;
+                self.changeBgm(bgmName);
+            }
+            select.addEventListener('change', bgmSelectHandler);
         });
     }
 

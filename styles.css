@@ -350,6 +350,26 @@ h1.outlined-text {
     margin: 10px 0;
 }
 
+/* BGM选择下拉框样式 */
+.bgm-select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #f5f5f5;
+    border: 2px solid #DEB887;
+    border-radius: 5px;
+    color: #333;
+    margin: 10px 0;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.bgm-select:focus {
+    outline: none;
+    border-color: #FF9933;
+    box-shadow: 0 0 5px rgba(255, 153, 51, 0.5);
+}
+
 /* 管理题库页面 */
 .title {
     font-size: 36px;
