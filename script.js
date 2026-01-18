@@ -118,12 +118,11 @@ function showAddBankPage() {
 // 音效管理器
 class SoundManager {
     constructor() {
-        this.bgmVolume = 0.5;
-        this.sfxVolume = 0.5;
+        // 从localStorage加载设置，如果没有则使用默认值
+        this.loadSettings();
+        
         this.sounds = {};
         this.bgm = null;
-        this.bgmPlaying = false;
-        this.currentBgm = 'bgm.mp3'; // 默认BGM
         this.loadSounds();
         this.setupEventListeners();
         this.setupButtonClickSounds();
@@ -131,6 +130,46 @@ class SoundManager {
         
         // 初始化所有音量滑块的值
         this.updateAllVolumeSliders();
+    }
+    
+    // 从localStorage加载设置
+    loadSettings() {
+        const savedSettings = localStorage.getItem('eoe-guess-settings');
+        if (savedSettings) {
+            try {
+                const settings = JSON.parse(savedSettings);
+                this.bgmVolume = settings.bgmVolume || 0.5;
+                this.sfxVolume = settings.sfxVolume || 0.5;
+                this.currentBgm = settings.currentBgm || 'bgm.mp3';
+                // 背景音乐开关状态不保存，默认关闭
+                this.bgmPlaying = false;
+            } catch (e) {
+                console.error('加载设置失败:', e);
+                // 使用默认值
+                this.useDefaultSettings();
+            }
+        } else {
+            // 使用默认值
+            this.useDefaultSettings();
+        }
+    }
+    
+    // 使用默认设置
+    useDefaultSettings() {
+        this.bgmVolume = 0.5;
+        this.sfxVolume = 0.5;
+        this.bgmPlaying = false;
+        this.currentBgm = 'bgm.mp3';
+    }
+    
+    // 将设置保存到localStorage
+    saveSettings() {
+        const settings = {
+            bgmVolume: this.bgmVolume,
+            sfxVolume: this.sfxVolume,
+            currentBgm: this.currentBgm
+        };
+        localStorage.setItem('eoe-guess-settings', JSON.stringify(settings));
     }
     
     // 更新所有音量滑块的值
@@ -210,6 +249,7 @@ class SoundManager {
         if (this.bgm) {
             this.bgm.volume = volume;
         }
+        this.saveSettings(); // 保存设置
     }
 
     // 切换背景音乐
@@ -241,6 +281,7 @@ class SoundManager {
         
         // 同步所有BGM选择下拉框
         this.updateBgmSelect();
+        this.saveSettings(); // 保存设置
     }
     
     // 更新所有BGM选择下拉框
@@ -255,6 +296,7 @@ class SoundManager {
         for (const audio of Object.values(this.sounds)) {
             audio.volume = volume;
         }
+        this.saveSettings(); // 保存设置
     }
 
     playSound(name) {
