@@ -1380,13 +1380,6 @@ function showGamePage() {
         return;
     }
     
-    // 绑定回车键到回答按钮
-    function handleKeyDown(e) {
-        if (e.key === 'Enter' && currentPage === 'game-page' && !answeredCurrent) {
-            checkAnswer();
-        }
-    }
-    
     // 先移除可能存在的事件监听器，避免重复绑定
     window.removeEventListener('keydown', handleKeyDown);
     // 添加新的事件监听器
@@ -1558,6 +1551,13 @@ function handleMultiCharacterInput(currentInput, inputValue) {
         if (nextInput) {
             nextInput.focus();
         }
+    }
+}
+
+// 回车键处理函数 - 移到外部确保函数实例唯一
+function handleKeyDown(e) {
+    if (e.key === 'Enter' && currentPage === 'game-page' && !answeredCurrent) {
+        checkAnswer();
     }
 }
 
