@@ -16,6 +16,54 @@ let answeredCurrent = false;
 // 用于跟踪和释放blob URL，避免内存泄漏
 let blobUrls = new Set();
 
+// 添加防误触F5刷新功能
+window.addEventListener('keydown', function(e) {
+    // 只有在电脑版才生效（屏幕宽度大于768px）
+    if (window.innerWidth > 768) {
+        // 阻止F5键的默认刷新行为
+        if (e.key === 'F5') {
+            e.preventDefault();
+            // 显示确认提示
+            if (confirm('确定要刷新页面吗？当前游戏进度将会丢失。')) {
+                // 用户确认后才刷新页面
+                window.location.reload();
+            }
+        }
+    }
+});
+
+// 添加首页标题彩蛋功能
+let titleClickCount = 0;
+let titleClickTimeout = null;
+
+// 页面加载完成后添加事件监听
+document.addEventListener('DOMContentLoaded', function() {
+    const titleElement = document.querySelector('#main-page .content h1.outlined-text');
+    if (titleElement) {
+        titleElement.addEventListener('click', function(e) {
+            // 增加点击计数
+            titleClickCount++;
+            
+            // 清除之前的超时计时器
+            if (titleClickTimeout) {
+                clearTimeout(titleClickTimeout);
+            }
+            
+            // 设置新的超时计时器，如果3秒内没有再次点击，则重置计数
+            titleClickTimeout = setTimeout(function() {
+                titleClickCount = 0;
+            }, 3000);
+            
+            // 连续点击3次，触发彩蛋
+            if (titleClickCount === 3) {
+                showEasterEggModal();
+                // 重置计数，以便可以重复触发
+                titleClickCount = 0;
+            }
+        });
+    }
+});
+
 // 公共函数：处理图片URL
 function getImageSrc(imgData) {
     if (!imgData) return '';
@@ -393,9 +441,6 @@ function markBankAsPlayed(bankId) {
     }
 }
 
-function clearPlayedBanks() {
-    localStorage.removeItem('eoe-guess-played-banks');
-}
 
 // 题库管理类
 class QuestionBank {
@@ -1702,6 +1747,16 @@ function showHelp() {
 
 function closeHelpModal() {
     document.getElementById('help-modal').style.display = 'none';
+}
+
+// 显示彩蛋弹窗
+function showEasterEggModal() {
+    document.getElementById('easter-egg-modal').style.display = 'flex';
+}
+
+// 关闭彩蛋弹窗
+function closeEasterEggModal() {
+    document.getElementById('easter-egg-modal').style.display = 'none';
 }
 
 // 显示导出成功弹窗
