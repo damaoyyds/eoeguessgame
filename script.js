@@ -1557,6 +1557,7 @@ function handleMultiCharacterInput(currentInput, inputValue) {
 // 回车键处理函数 - 移到外部确保函数实例唯一
 function handleKeyDown(e) {
     if (e.key === 'Enter' && currentPage === 'game-page' && !answeredCurrent) {
+        e.preventDefault(); // 阻止回车键的默认行为
         checkAnswer();
     }
 }

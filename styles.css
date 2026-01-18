@@ -1717,4 +1717,37 @@ html {
 
 .modal-body {
     padding: 10px 0;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+/* 针对手机端的特殊样式，确保模态框不会占满整个屏幕 */
+@media (max-width: 768px) {
+    .modal-content {
+        max-height: 80vh;
+        overflow: hidden;
+    }
+    
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+        /* 自定义滚动条样式 */
+        scrollbar-width: thin;
+        scrollbar-color: #DEB887 #FFF8DC;
+    }
+    
+    /* 针对WebKit浏览器的滚动条样式 */
+    .modal-body::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .modal-body::-webkit-scrollbar-track {
+        background: #FFF8DC;
+    }
+    
+    .modal-body::-webkit-scrollbar-thumb {
+        background-color: #DEB887;
+        border-radius: 3px;
+        border: 1px solid #FFF8DC;
+    }
 }
