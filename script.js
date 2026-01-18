@@ -138,6 +138,9 @@ function showSettingsPage() {
     // 确保BGM开关图标显示正确
     soundManager.updateBgmButton();
     
+    // 确保鬼畜模式开关图标显示正确
+    soundManager.updateGhostModeButton();
+    
     // 显示设置弹窗而不是页面
     document.getElementById('settings-modal').style.display = 'flex';
 }
@@ -175,6 +178,7 @@ class SoundManager {
         this.setupEventListeners();
         this.setupButtonClickSounds();
         this.updateBgmButton();
+        this.updateGhostModeButton();
         
         // 初始化所有音量滑块的值
         this.updateAllVolumeSliders();
@@ -189,6 +193,7 @@ class SoundManager {
                 this.bgmVolume = settings.bgmVolume || 0.5;
                 this.sfxVolume = settings.sfxVolume || 0.5;
                 this.currentBgm = settings.currentBgm || 'bgm.mp3';
+                this.ghostMode = settings.ghostMode || false;
                 // 背景音乐开关状态不保存，默认关闭
                 this.bgmPlaying = false;
             } catch (e) {
@@ -208,6 +213,7 @@ class SoundManager {
         this.sfxVolume = 0.5;
         this.bgmPlaying = false;
         this.currentBgm = 'bgm.mp3';
+        this.ghostMode = true;
     }
     
     // 将设置保存到localStorage
@@ -215,9 +221,36 @@ class SoundManager {
         const settings = {
             bgmVolume: this.bgmVolume,
             sfxVolume: this.sfxVolume,
-            currentBgm: this.currentBgm
+            currentBgm: this.currentBgm,
+            ghostMode: this.ghostMode
         };
         localStorage.setItem('eoe-guess-settings', JSON.stringify(settings));
+    }
+    
+    // 切换真的假的模式
+    toggleGhostMode() {
+        this.ghostMode = !this.ghostMode;
+        this.saveSettings();
+        this.updateGhostModeButton();
+        return this.ghostMode;
+    }
+    
+    // 更新真的假的模式按钮状态
+    updateGhostModeButton() {
+        const btnElements = document.querySelectorAll('[id^="ghost-mode-toggle"]');
+        btnElements.forEach(btn => {
+            if (btn) {
+                btn.innerHTML = this.ghostMode ? '✅' : '❌';
+                btn.className = 'bgm-toggle-btn-small';
+            }
+        });
+    }
+    
+    // 设置真的假的模式状态
+    setGhostMode(enabled) {
+        this.ghostMode = enabled;
+        this.saveSettings();
+        this.updateGhostModeButton();
     }
     
     // 更新所有音量滑块的值
@@ -403,6 +436,17 @@ class SoundManager {
                 self.changeBgm(bgmName);
             }
             select.addEventListener('change', bgmSelectHandler);
+        });
+        
+        // 为所有鬼畜模式开关按钮添加事件监听（包括页面和弹窗）
+        const ghostModeButtons = document.querySelectorAll('[id^="ghost-mode-toggle"]');
+        ghostModeButtons.forEach(btn => {
+            // 先移除现有的事件监听器，防止重复绑定
+            btn.removeEventListener('click', ghostModeHandler);
+            function ghostModeHandler() {
+                self.toggleGhostMode();
+            }
+            btn.addEventListener('click', ghostModeHandler);
         });
     }
 
@@ -1778,7 +1822,24 @@ function checkAnswer() {
             }, 100);
         }
     } else {
-        soundManager.playSound('lose');
+        // 处理错误答案
+        if (soundManager.ghostMode) {
+            // 真的假的模式：当前题打错次数 + 随机0-7次
+            const wrongCount = window.wrongAnswers.length; // 当前题的打错次数
+            const randomAdd = Math.floor(Math.random() * 7) + 1; // 随机0-7次
+            const playCount = wrongCount + randomAdd;
+            
+            for (let i = 0; i < playCount; i++) {
+                const delay = Math.random() * 0.9 + 0.1; // 0.1-1秒延迟
+                setTimeout(() => {
+                    soundManager.playSound('lose');
+                }, delay * 1000 * i); // 累积延迟，实现重叠播放效果
+            }
+        } else {
+            // 普通模式：只播放一次lose音效
+            soundManager.playSound('lose');
+        }
+        
         document.getElementById('result-text').textContent = '答错啦~';
         
         // 添加错误答案到数组

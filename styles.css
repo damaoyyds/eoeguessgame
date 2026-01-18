@@ -326,6 +326,46 @@ h1.outlined-text {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* 鬼畜模式按钮样式 */
+.ghost-mode-btn {
+    background-color: #FF6B6B;
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+    border-radius: 25px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-family: 'GameFont', '微软雅黑', Arial, sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    text-align: center;
+}
+
+.ghost-mode-btn:hover {
+    background-color: #FF5252;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ghost-mode-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ghost-mode-btn.active {
+    background-color: #4ECDC4;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ghost-mode-btn.active:hover {
+    background-color: #45B7AA;
+}
+
 /* 设置页面样式 */
 .settings-container {
     background-color: #FFFFFF;
