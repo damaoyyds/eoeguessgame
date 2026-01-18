@@ -1598,6 +1598,16 @@ function showGamePage() {
     const answerButtons = answerSection.querySelector('.answer-buttons');
     answerSection.insertBefore(newInputsContainer, answerButtons);
     
+    // 仅针对电脑版，自动聚焦第一个输入框
+    if (window.innerWidth > 768) {
+        const firstInput = newInputsContainer.querySelector('.answer-input');
+        if (firstInput) {
+            setTimeout(() => {
+                firstInput.focus();
+            }, 100);
+        }
+    }
+    
     // 初始化或清空错误答案数组
     window.wrongAnswers = [];
     
