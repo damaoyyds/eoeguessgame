@@ -2061,13 +2061,18 @@ async function loadInitialBanks() {
     
     // 清理localStorage中特定的旧题库
     // 只删除已确定需要移除的旧题库，保留所有其他题库（包括用户自己创建的）
-    const banksToRemove = ['第一期_updated', '第二期_updated'];
+    const banksToRemoveNames = ['第一期_updated', '第二期_updated', '第一期_update', '第二期_update'];
     
     // 2. 获取当前localStorage中的所有题库
     let currentBanks = QuestionBank.getAllBanks();
     
-    // 3. 过滤掉需要移除的旧题库
-    const filteredBanks = currentBanks.filter(bank => !banksToRemove.includes(bank.name));
+    // 3. 过滤掉需要移除的旧题库 - 匹配多种可能的名称
+    const filteredBanks = currentBanks.filter(bank => {
+        // 检查题库名称是否包含弃用的关键词
+        return !banksToRemoveNames.includes(bank.name) && 
+               !bank.name.includes('第一期_update') && 
+               !bank.name.includes('第二期_update');
+    });
     
     // 4. 保存过滤后的题库到localStorage
     if (filteredBanks.length !== currentBanks.length) {
