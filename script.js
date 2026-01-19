@@ -2023,8 +2023,7 @@ function toggleBgm() {
 async function loadInitialBanks() {
     // 定义初始题库文件路径 - 包括所有banks文件夹中的JSON文件
     const initialBankFiles = [
-        'banks/第一期_updated.json',
-        'banks/第二期_updated.json',
+        'banks/第一期重制版.json',
         'banks/拼好团DLC.json',
         'banks/码头笑话DLC.json'
     ];
@@ -2049,6 +2048,22 @@ async function loadInitialBanks() {
         } catch (error) {
             console.error(`处理 ${filePath} 时出错:`, error);
         }
+    }
+    
+    // 清理localStorage中特定的旧题库
+    // 只删除已确定需要移除的旧题库，保留所有其他题库（包括用户自己创建的）
+    const banksToRemove = ['第一期_updated', '第二期_updated'];
+    
+    // 2. 获取当前localStorage中的所有题库
+    let currentBanks = QuestionBank.getAllBanks();
+    
+    // 3. 过滤掉需要移除的旧题库
+    const filteredBanks = currentBanks.filter(bank => !banksToRemove.includes(bank.name));
+    
+    // 4. 保存过滤后的题库到localStorage
+    if (filteredBanks.length !== currentBanks.length) {
+        QuestionBank.saveBanks(filteredBanks);
+        console.log(`已清理${currentBanks.length - filteredBanks.length}个旧题库`);
     }
 }
 

@@ -4,146 +4,139 @@
   "author": "Oneiric",
   "questions": [
     {
-      "id": 44,
+      "id": 34,
       "image": "images/s4/question_1_1768621896906.webp",
       "question": "打一官爵",
       "answer": "弼马温",
       "hint": "颜色，人物，行为"
     },
     {
-      "id": 45,
+      "id": 35,
       "image": "images/s4/question_2_1768621896907.webp",
       "question": "打一名词",
       "answer": "乘车码",
       "hint": "柚恩在干嘛？"
     },
     {
-      "id": 46,
+      "id": 36,
       "image": "images/s4/question_3_1768621896909.webp",
       "question": "打一地名",
       "answer": "大马士革",
       "hint": "你不许打她，她是我妈！"
     },
     {
-      "id": 47,
+      "id": 37,
       "image": "images/s4/question_4_1768621896909.webp",
       "question": "打一成语",
       "answer": "当牛做马",
       "hint": "左面的是沐霂，她拿的是？"
     },
     {
-      "id": 48,
+      "id": 38,
       "image": "images/s4/question_5_1768621896910.webp",
       "question": "打一名词",
       "answer": "付款码",
       "hint": "柚恩在干嘛"
     },
     {
-      "id": 49,
+      "id": 39,
       "image": "images/s4/question_6_1768621896908.webp",
       "question": "打一招式",
       "answer": "回马枪",
       "hint": "似乎是项羽的绝技"
     },
     {
-      "id": 50,
+      "id": 40,
       "image": "images/s4/question_7_1768621896912.webp",
       "question": "打一成语",
       "answer": "老马识途",
       "hint": "真认识路吗？"
     },
     {
-      "id": 51,
+      "id": 41,
       "image": "images/s4/question_8_1768621896911.webp",
       "question": "打一交通工具",
       "answer": "马车",
       "hint": "唉，陀螺柚子"
     },
     {
-      "id": 52,
+      "id": 42,
       "image": "images/s4/question_9_1768621896910.webp",
       "question": "打一地名",
       "answer": "马德里",
       "hint": "柚恩不饶人"
     },
     {
-      "id": 53,
+      "id": 43,
       "image": "images/s4/question_10_1768621896910.webp",
       "question": "打一人名",
       "answer": "马嘉祺",
       "hint": "爆了！爆了！"
     },
     {
-      "id": 54,
+      "id": 44,
       "image": "images/s4/question_11_1768621896912.webp",
       "question": "打一名词",
       "answer": "马甲线",
       "hint": "柚恩和PDD（？）都有"
     },
     {
-      "id": 55,
+      "id": 45,
       "image": "images/s4/question_12_1768621896910.webp",
       "question": "打一品牌",
       "answer": "马自达",
       "hint": "自己~打自己~"
     },
     {
-      "id": 56,
+      "id": 46,
       "image": "images/s4/question_13_1768621896910.webp",
       "question": "打一生物",
       "answer": "蚂蚁",
       "hint": "人物，动作"
     },
     {
-      "id": 57,
+      "id": 47,
       "image": "images/s4/question_14_1768621896910.webp",
       "question": "打一成语",
       "answer": "明码标价",
       "hint": "柚恩开了家果蔬店"
     },
     {
-      "id": 58,
+      "id": 48,
       "image": "images/s4/question_15_1768621896912.webp",
       "question": "打一成语",
       "answer": "犬马之劳",
       "hint": "我去，RR！"
     },
     {
-      "id": 59,
-      "image": "images/s4/question_16_1768621896911.webp",
-      "question": "打一食物",
-      "answer": "沙琪玛",
-      "hint": "马尾在这一刻具象化了"
-    },
-    {
-      "id": 60,
+      "id": 49,
       "image": "images/s4/question_17_1768621896911.webp",
       "question": "打一名词",
       "answer": "荨麻疹",
       "hint": "有一说一我不信有线下店有卖柚恩的抱枕"
     },
     {
-      "id": 61,
+      "id": 50,
       "image": "images/s4/question_18_1768621896911.webp",
       "question": "打一人名",
       "answer": "越前龙马",
       "hint": "纸哥最爱"
     },
     {
-      "id": 62,
+      "id": 51,
       "image": "images/s4/question_19_1768621896912.webp",
       "question": "打一名词",
       "answer": "走马灯",
       "hint": "不要似好吗T T"
     },
     {
-      "id": 63,
+      "id": 52,
       "image": "images/s4/question_20_1768621896912.webp",
       "question": "打一成语",
       "answer": "走马观花",
       "hint": "前两个字跟上一题一样"
     }
   ],
-  "count": 20,
+  "count": 19,
   "createdAt": "2026-01-17T03:51:36.891Z"
 }

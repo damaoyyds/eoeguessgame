@@ -4,104 +4,97 @@
   "author": "Oneiric",
   "questions": [
     {
-      "id": 30,
+      "id": 21,
       "image": "images/s3/question_1_1768562527253.webp",
       "question": "打一粉丝名",
       "answer": "TTK",
       "hint": "三个大写字母"
     },
     {
-      "id": 31,
+      "id": 22,
       "image": "images/s3/question_2_1768562527252.webp",
       "question": "打一食物",
       "answer": "冻梨",
       "hint": "少了什么？"
     },
     {
-      "id": 32,
+      "id": 23,
       "image": "images/s3/question_3_1768562527253.webp",
       "question": "打一成语",
       "answer": "纷至沓来",
       "hint": "跟开挂无关"
     },
     {
-      "id": 33,
+      "id": 24,
       "image": "images/s3/question_4_1768562527254.webp",
       "question": "打一成语",
       "answer": "纸上谈兵",
       "hint": "我超，冰！"
     },
     {
-      "id": 34,
+      "id": 25,
       "image": "images/s3/question_5_1768562527257.webp",
       "question": "打一成语",
       "answer": "高歌猛进",
       "hint": "哇好高啊，好快啊！"
     },
     {
-      "id": 35,
+      "id": 26,
       "image": "images/s3/question_6_1768562527257.webp",
       "question": "打一俗语",
       "answer": "智力有问题",
       "hint": "早姐我没在串你啊"
     },
     {
-      "id": 36,
+      "id": 27,
       "image": "images/s3/question_7_1768562527257.webp",
       "question": "打一成语",
       "answer": "割须弃袍",
       "hint": "跟曹操有关"
     },
     {
-      "id": 37,
+      "id": 28,
       "image": "images/s3/question_8_1768562527259.webp",
       "question": "打一成语",
       "answer": "喜新厌旧",
       "hint": "题目里出现了两个字在答案里"
     },
     {
-      "id": 38,
+      "id": 29,
       "image": "images/s3/question_9_1768562527259.webp",
       "question": "打一人名",
       "answer": "葛饰北斋",
       "hint": "浮世绘画家"
     },
     {
-      "id": 39,
+      "id": 30,
       "image": "images/s3/question_10_1768562527259.webp",
       "question": "打一水产",
       "answer": "蛤蜊",
       "hint": "别急，有反转"
     },
     {
-      "id": 40,
+      "id": 31,
       "image": "images/s3/question_11_1768562527260.webp",
       "question": "打一俗语",
       "answer": "马后炮",
       "hint": "俩动物"
     },
     {
-      "id": 41,
+      "id": 32,
       "image": "images/s3/question_12_1768562527260.webp",
       "question": "打一成语",
       "answer": "夜夜笙歌",
       "hint": "老资历。。"
     },
     {
-      "id": 42,
+      "id": 33,
       "image": "images/s3/question_13_1768562527260.webp",
       "question": "打一词语",
       "answer": "三围",
       "hint": "猜不出来的是串少了"
-    },
-    {
-      "id": 43,
-      "image": "images/s3/question_14_1768562527259.webp",
-      "question": "打一游戏种类",
-      "answer": "塔防",
-      "hint": "能挡住吗？"
     }
   ],
-  "count": 14,
+  "count": 13,
   "createdAt": "2026-01-16T11:22:07.245Z"
 }
