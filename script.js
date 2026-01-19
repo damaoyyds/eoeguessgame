@@ -1824,9 +1824,9 @@ function checkAnswer() {
     } else {
         // 处理错误答案
         if (soundManager.ghostMode) {
-            // 真的假的模式：当前题打错次数 + 随机0-7次
+            // 真的假的模式：当前题打错次数 + 随机0-12次
             const wrongCount = window.wrongAnswers.length; // 当前题的打错次数
-            const randomAdd = Math.floor(Math.random() * 7) + 1; // 随机0-7次
+            const randomAdd = Math.floor(Math.random() * 12) + 1; // 随机0-12次
             const playCount = wrongCount + randomAdd;
             
             for (let i = 0; i < playCount; i++) {
