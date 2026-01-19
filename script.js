@@ -293,7 +293,21 @@ class SoundManager {
         }
 
         // 加载背景音乐
-        this.bgm = new Audio(`sounds/${this.currentBgm}`);
+        let bgmUrl;
+        if (this.currentBgm === 'bgm2.mp3') {
+            // 使用外部URL
+            bgmUrl = 'https://eoeguessgamer-1395525938.cos.ap-shanghai.myqcloud.com/sounds/%E9%9C%B2%E6%97%A9%E5%85%A5%E9%98%B5%E6%9B%B2.mp3';
+        } else if (this.currentBgm === 'together.mp4') {
+            // 使用外部URL
+            bgmUrl = 'https://eoeguessgamer-1395525938.cos.ap-shanghai.myqcloud.com/sounds/%E5%92%8C%E4%BD%A0%E5%9C%A8%E4%B8%80%E8%B5%B7.mp4';
+        } else if (this.currentBgm === 'guang.mp4') {
+            // 使用外部URL
+            bgmUrl = 'https://eoeguessgamer-1395525938.cos.ap-shanghai.myqcloud.com/sounds/%E8%A7%85%E5%85%89.mp4';
+        } else {
+            // 使用本地文件
+            bgmUrl = `sounds/${this.currentBgm}`;
+        }
+        this.bgm = new Audio(bgmUrl);
         this.bgm.volume = this.bgmVolume;
         this.bgm.loop = true;
     }
@@ -351,7 +365,21 @@ class SoundManager {
         this.currentBgm = bgmName;
         
         // 重新加载BGM
-        this.bgm = new Audio(`sounds/${this.currentBgm}`);
+        let bgmUrl;
+        if (bgmName === 'bgm2.mp3') {
+            // 使用外部URL
+            bgmUrl = 'https://eoeguessgamer-1395525938.cos.ap-shanghai.myqcloud.com/sounds/%E9%9C%B2%E6%97%A9%E5%85%A5%E9%98%B5%E6%9B%B2.mp3';
+        } else if (bgmName === 'together.mp4') {
+            // 使用外部URL
+            bgmUrl = 'https://eoeguessgamer-1395525938.cos.ap-shanghai.myqcloud.com/sounds/%E5%92%8C%E4%BD%A0%E5%9C%A8%E4%B8%80%E8%B5%B7.mp4';
+        } else if (bgmName === 'guang.mp4') {
+            // 使用外部URL
+            bgmUrl = 'https://eoeguessgamer-1395525938.cos.ap-shanghai.myqcloud.com/sounds/%E8%A7%85%E5%85%89.mp4';
+        } else {
+            // 使用本地文件
+            bgmUrl = `sounds/${this.currentBgm}`;
+        }
+        this.bgm = new Audio(bgmUrl);
         this.bgm.volume = this.bgmVolume;
         this.bgm.loop = true;
         
