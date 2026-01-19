@@ -616,12 +616,21 @@ function refreshSelectBankList() {
     const bankList = document.getElementById('select-bank-list');
     bankList.innerHTML = '';
     
-    const banks = QuestionBank.getAllBanks();
+    let banks = QuestionBank.getAllBanks();
     
     if (banks.length === 0) {
         bankList.innerHTML = '<div class="outlined-text" style="margin: 50px;text-align: center;">暂无题库，请先添加</div>';
         return;
     }
+    
+    // 排序：让第一期重制版显示在最前面
+    banks = banks.sort((a, b) => {
+        // 优先显示第一期重制版
+        if (a.name === '第一期重制版') return -1;
+        if (b.name === '第一期重制版') return 1;
+        // 其他题库按默认顺序显示
+        return 0;
+    });
     
     banks.forEach(bank => {
         const bankItem = createBankItem(bank, false);

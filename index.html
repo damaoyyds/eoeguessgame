@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EOE 看图猜词</title>
+    <title>EOE 谐音梗挑战</title>
     <link rel="icon" href="images/icon.png" type="image/png">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -20,7 +20,7 @@
                 <button class="icon-btn" onclick="showSettingsPage()">⚙️</button>
             </div>
             <div class="content">
-                <h1 class="outlined-text">EOE看图猜词</h1>
+                <h1 class="outlined-text">EOE谐音梗挑战</h1>
                 <div class="decoration">- * - * -</div>
                 <div class="button-group-vertical">
                     <button class="rounded-button" onclick="showSelectBankPage()">开始游戏</button>
@@ -305,26 +305,43 @@
         <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="outlined-text">公告</h1>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h1 class="outlined-text">公告</h1>
+                    <p style="font-size: 10px; color: #E0C890; margin: 2px 0 0 0; text-align: center;">千万不要连点首页上的EOE谐音梗挑战，有bug</p>
+                </div>
                 <button class="close-btn" onclick="closeAnnouncementModal()">×</button>
             </div>
             <div class="modal-body">
                 <div class="help-content">
                     <div class="outlined-text" style="text-align: left; line-height: 1.8; font-size: 18px; margin-bottom: 20px;">
-                        <p style="color: #4ECDC4; font-weight: bold; font-size: 20px;">更新公告：</p>
-                        <p style="font-size: 18px;">1. 真的假的音效已经做成了可选开关，默认开启，关闭后一次回车只会听到一次音效。</p>
-                        <p style="font-size: 18px;">2. 设置里可以切换bgm啦。</p>
-                        <p style="font-size: 18px;">3. 优化了资源加载速度和游戏体验。</p>
-                        <br>
                         <p style="text-indent: 2em;">EOE谐音梗挑战网页版已经正式上线啦，欢迎大家前来游玩，有任何意见建议或者bug的话，可以和网页版作者B站私信反馈。想投稿题目的话可以在首页点击我要出题，编辑完成后点击导出题库，将题目压缩包发到提示的邮箱里就行啦，祝大家玩的开心。</p>
                         <br>
-                        <p style="font-size: 11px; color: #B8B090;">千万不要连点首页上的EOE看图猜词，有bug</p>
-                        <br>
+                        
                         <p>网页版作者：<a href="https://space.bilibili.com/3690980530195127" target="_blank">@柚想起她</a></p>
                         <p>游戏原作者：<a href="https://space.bilibili.com/142025" target="_blank">@Oneiric_Dairy</a></p>
-                        <br>
                         <p>喜欢的话可以给我们b站点个关注，感谢大家!</p>
                         <p>对了，不要忘记看<a href="https://space.bilibili.com/1795147802" target="_blank">@柚恩不加糖</a>，<a href="https://space.bilibili.com/1669777785" target="_blank">@露早gogo</a>的直播呦❤</p>
+                        <br>
+                        <p style="color: #4ECDC4; font-weight: bold; font-size: 20px;">更新公告 260119：</p>
+                        <p style="font-size: 18px;">·删除了与猪、狗和傻有关的梗，今后的更新将不会添加任何略早梗</p>
+                        <p style="font-size: 18px;">·游戏内的游戏名更改为EOE谐音梗挑战</p>
+                        <p style="font-size: 18px;">·将原来的第一期和第二期合并为第一期重制版</p>
+                        <p style="font-size: 18px;">·替换了某个爆了的人物</p>
+                        <p style="font-size: 18px;">·修改了第一期重制版的部分难以理解的提示</p>
+                        <p style="font-size: 18px;">·将真的假的的bug改为可开关的游戏机制</p>
+                        <p style="font-size: 18px;">·增加了除了哈基米音乐以外的BGM</p>
+                        <p style="font-size: 18px;">·优化了载入速度</p>
+                        <p style="font-size: 18px;">·修改了某个因为大O因为丈育看错的字</p>
+                        <br>
+                        <p style="color: #4ECDC4; font-weight: bold; font-size: 20px;">更新公告 260118：</p>
+                        <p style="font-size: 18px;">·修复真的假的bug，现在按一次回车只会听到一次真的假的，喜欢听的可以一直按捏</p>
+                        <p style="font-size: 18px;">·设置里可以切换bgm啦</p>
+                        <p style="font-size: 18px;">·优化了资源加载速度和游戏体验</p>
+                        <br>
+                        <p style="color: #4ECDC4; font-weight: bold; font-size: 20px;">更新公告 260117：</p>
+                        <p style="font-size: 18px;">·网页版全新上线！</p>
+                        <p style="font-size: 18px;">·增加了马头笑话DLC</p>
+                        <p style="font-size: 18px;">·增加了拼好团DLC</p>
                     </div>
                 </div>
             </div>
@@ -342,7 +359,9 @@
             <div class="modal-body">
                 <div class="help-content">
                     <div class="outlined-text" style="text-align: center; line-height: 1.8; font-size: 24px; color: #FF69B4; margin-bottom: 20px;">
-                        <p>姜柚恩我是妈妈的小狗，</p>
+                        <p>柚恩妈妈</p>
+                        <p>你的小狗来喽</p>
+                        <p>我是妈妈的小狗，</p>
                         <p>吃饱喝足找妈妈，</p>
                         <p>只爱妈妈一个人，</p>
                         <p>属于你的小狗狗~~~</p>
