@@ -578,6 +578,11 @@ class QuestionBank {
                 return { success: false, message: '无效的题库格式' };
             }
             
+            // 禁止加载名称为"第一期"或"第二期"的题库
+            if (bankData.name === '第一期' || bankData.name === '第二期') {
+                return { success: false, message: '该题库已弃用，禁止加载' };
+            }
+            
             const banks = this.getBanks();
             
             // 检查是否已存在同名题库，如果存在则替换
@@ -2061,15 +2066,15 @@ async function loadInitialBanks() {
     
     // 清理localStorage中特定的旧题库
     // 只删除已确定需要移除的旧题库，保留所有其他题库（包括用户自己创建的）
-    const banksToRemoveNames = ['第一期_updated', '第二期_updated', '第一期_update', '第二期_update'];
+    const deprecatedBankNames = ['第一期', '第二期', '第一期_updated', '第二期_updated', '第一期_update', '第二期_update'];
     
     // 2. 获取当前localStorage中的所有题库
     let currentBanks = QuestionBank.getAllBanks();
     
-    // 3. 过滤掉需要移除的旧题库 - 匹配多种可能的名称
+    // 3. 过滤掉需要移除的旧题库
     const filteredBanks = currentBanks.filter(bank => {
-        // 检查题库名称是否包含弃用的关键词
-        return !banksToRemoveNames.includes(bank.name) && 
+        // 检查题库名称是否为弃用名称或包含弃用关键词
+        return !deprecatedBankNames.includes(bank.name) && 
                !bank.name.includes('第一期_update') && 
                !bank.name.includes('第二期_update');
     });
@@ -2077,7 +2082,7 @@ async function loadInitialBanks() {
     // 4. 保存过滤后的题库到localStorage
     if (filteredBanks.length !== currentBanks.length) {
         QuestionBank.saveBanks(filteredBanks);
-        console.log(`已清理${currentBanks.length - filteredBanks.length}个旧题库`);
+        console.log(`已清理${currentBanks.length - filteredBanks.length}个旧题库，包括弃用的第一期和第二期`);
     }
 }
 
